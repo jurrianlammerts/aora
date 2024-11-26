@@ -15,11 +15,8 @@ const Profile = () => {
 
   const logout = async () => {
     await signOut();
-
     router.replace("/index");
   };
-
-  console.log({ user });
 
   return (
     <Page>

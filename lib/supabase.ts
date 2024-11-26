@@ -67,8 +67,6 @@ export async function signIn(
 
     if (error) throw error;
 
-    console.log({ [`[signIn]`]: data });
-
     return user;
   } catch (error) {
     throw new Error(`[signIn] ${error}`);
@@ -106,7 +104,7 @@ export async function getCurrentUser() {
 
     return data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return null;
   }
 }
