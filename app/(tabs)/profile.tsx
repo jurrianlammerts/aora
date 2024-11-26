@@ -1,23 +1,25 @@
 import { router } from "expo-router";
 import { View, Image, FlatList, TouchableOpacity } from "react-native";
 
-import { icons } from "../../constants";
-import useAppwrite from "../../lib/useSupabase";
-import { getUserPosts, signOut } from "../../lib/supabase";
-import { useGlobalContext } from "../../context/GlobalProvider";
-import { EmptyState, InfoBox, VideoCard, Page } from "../../components";
+import useSupabase from "@/lib/useSupabase";
+import { getUserPosts } from "@/lib/supabase";
+import useAuthStore from "@/store/auth";
+import Page from "@/components/Page";
+import EmptyState from "@/components/EmptyState";
+import InfoBox from "@/components/InfoBox";
+import VideoCard from "@/components/VideoCard";
 
 const Profile = () => {
-  const { user, setUser, setIsLogged } = useGlobalContext();
-  const { data: posts } = useAppwrite(() => getUserPosts(user.$id));
+  const { user, signOut } = useAuthStore();
+  const { data: posts } = useSupabase(() => getUserPosts(user.id));
 
   const logout = async () => {
     await signOut();
-    setUser(null);
-    setIsLogged(false);
 
-    router.replace("/sign-in");
+    router.replace("/index");
   };
+
+  console.log({ user });
 
   return (
     <Page>
@@ -46,7 +48,7 @@ const Profile = () => {
               className="flex w-full items-end mb-10"
             >
               <Image
-                source={icons.logout}
+                source={require("@/assets/icons/logout.png")}
                 resizeMode="contain"
                 className="w-6 h-6"
               />

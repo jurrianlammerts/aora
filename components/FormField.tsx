@@ -1,7 +1,20 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  type TextInputProps,
+} from "react-native";
 
-import { icons } from "../constants";
+interface FormFieldProps extends TextInputProps {
+  title: string;
+  value: string;
+  placeholder?: string;
+  handleChangeText: (text: string) => void;
+  otherStyles?: string;
+}
 
 const FormField = ({
   title,
@@ -10,7 +23,7 @@ const FormField = ({
   handleChangeText,
   otherStyles,
   ...props
-}) => {
+}: FormFieldProps) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -31,7 +44,11 @@ const FormField = ({
         {title === "Password" && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Image
-              source={!showPassword ? icons.eye : icons.eyeHide}
+              source={
+                !showPassword
+                  ? require("@/assets/icons/eye.png")
+                  : require("@/assets/icons/eye-hide.png")
+              }
               className="w-6 h-6"
               resizeMode="contain"
             />

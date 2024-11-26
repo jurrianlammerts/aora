@@ -12,13 +12,14 @@ import {
   ScrollView,
 } from "react-native";
 
-import { icons } from "../../constants";
-import { createVideoPost } from "../../lib/supabase";
-import { CustomButton, FormField, Page } from "../../components";
-import { useGlobalContext } from "../../context/GlobalProvider";
+import { createVideoPost } from "@/lib/supabase";
+import CustomButton from "@/components/CustomButton";
+import FormField from "@/components/FormField";
+import Page from "@/components/Page";
+import useAuthStore from "@/store/auth";
 
 const Create = () => {
-  const { user } = useGlobalContext();
+  const { session } = useAuthStore();
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
     title: "",
@@ -57,9 +58,9 @@ const Create = () => {
 
   const submit = async () => {
     if (
-      (form.prompt === "") |
-      (form.title === "") |
-      !form.thumbnail |
+      form.prompt === "" ||
+      form.title === "" ||
+      !form.thumbnail ||
       !form.video
     ) {
       return Alert.alert("Please provide all fields");
@@ -69,11 +70,11 @@ const Create = () => {
     try {
       await createVideoPost({
         ...form,
-        userId: user.$id,
+        userId: session.user.id,
       });
 
       Alert.alert("Success", "Post uploaded successfully");
-      router.push("/home");
+      router.replace("/(tabs)/home");
     } catch (error) {
       Alert.alert("Error", error.message);
     } finally {
@@ -90,7 +91,10 @@ const Create = () => {
 
   return (
     <Page>
-      <ScrollView className="px-4 pt-6">
+      <ScrollView
+        className="px-4 pt-6"
+        contentContainerStyle={{ paddingBottom: 48 }}
+      >
         <Text className="text-2xl text-white font-psemibold">Upload Video</Text>
         <FormField
           title="Video Title"
@@ -118,7 +122,7 @@ const Create = () => {
               <View className="w-full h-40 px-4 bg-black-100 rounded-2xl border border-black-200 flex justify-center items-center">
                 <View className="w-14 h-14 border border-dashed border-secondary-100 flex justify-center items-center">
                   <Image
-                    source={icons.upload}
+                    source={require("@/assets/icons/upload.png")}
                     resizeMode="contain"
                     alt="upload"
                     className="w-1/2 h-1/2"
@@ -144,7 +148,7 @@ const Create = () => {
             ) : (
               <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 flex justify-center items-center flex-row space-x-2">
                 <Image
-                  source={icons.upload}
+                  source={require("@/assets/icons/upload.png")}
                   resizeMode="contain"
                   alt="upload"
                   className="w-5 h-5"

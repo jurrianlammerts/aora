@@ -1,14 +1,16 @@
 import { useEffect } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { View, Text, FlatList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import useAppwrite from "../../lib/useSupabase";
-import { searchPosts } from "../../lib/supabase";
-import { EmptyState, SearchInput, VideoCard } from "../../components";
+import useAppwrite from "@/lib/useSupabase";
+import { searchPosts } from "@/lib/supabase";
+import EmptyState from "@/components/EmptyState";
+import SearchInput from "@/components/SearchInput";
+import VideoCard from "@/components/VideoCard";
+import Page from "@/components/Page";
 
 const Search = () => {
-  const { query } = useLocalSearchParams();
+  const { query } = useLocalSearchParams<{ query: string }>();
   const { data: posts, refetch } = useAppwrite(() => searchPosts(query));
 
   useEffect(() => {
@@ -16,7 +18,7 @@ const Search = () => {
   }, [query]);
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <Page>
       <FlatList
         data={posts}
         keyExtractor={(item) => item.$id}
@@ -52,7 +54,7 @@ const Search = () => {
           />
         )}
       />
-    </SafeAreaView>
+    </Page>
   );
 };
 

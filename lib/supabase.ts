@@ -1,18 +1,26 @@
-import { createClient } from "@supabase/supabase-js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthError, createClient, User } from "@supabase/supabase-js";
 import * as ImagePicker from "expo-image-picker";
+import { UserType } from "types";
 
-// Ensure you replace these with your actual Supabase project details
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    storage: AsyncStorage,
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
 
 // Register user
-export async function createUser(
+export async function signUp(
   email: string,
   password: string,
   username: string
-) {
+): Promise<UserType | null> {
   try {
     // Sign up the user
     const { data, error } = await supabase.auth.signUp({
@@ -45,16 +53,23 @@ export async function createUser(
 }
 
 // Sign In
-export async function signIn(email: string, password: string) {
+export async function signIn(
+  email: string,
+  password: string
+): Promise<UserType | null> {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
     });
 
+    const user = await getCurrentUser();
+
     if (error) throw error;
 
-    return data.session;
+    console.log({ [`[signIn]`]: data });
+
+    return user;
   } catch (error) {
     throw new Error(`[signIn] ${error}`);
   }
@@ -102,8 +117,6 @@ export async function signOut() {
     const { error } = await supabase.auth.signOut();
 
     if (error) throw error;
-
-    return true;
   } catch (error) {
     throw new Error(`[signOut] ${error}`);
   }

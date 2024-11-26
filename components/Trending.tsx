@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { ResizeMode, Video } from "expo-av";
-import * as Animatable from "react-native-animatable";
+import Animated, {
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from "react-native-reanimated";
 import {
   FlatList,
   Image,
@@ -8,35 +12,27 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-import { icons } from "../constants";
+import { VideoPost } from "types";
 
-const zoomIn = {
-  0: {
-    scale: 0.9,
-  },
-  1: {
-    scale: 1,
-  },
-};
+interface TrendingItemProps {
+  activeItem: string;
+  item: VideoPost;
+}
 
-const zoomOut = {
-  0: {
-    scale: 1,
-  },
-  1: {
-    scale: 0.9,
-  },
-};
-
-const TrendingItem = ({ activeItem, item }) => {
+const TrendingItem = ({ activeItem, item }: TrendingItemProps) => {
   const [play, setPlay] = useState(false);
 
+  const animatedStyle = useAnimatedStyle(() => {
+    const scale = withTiming(activeItem === item.id ? 1 : 0.9, {
+      duration: 500,
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+
+    return { transform: [{ scale }] };
+  });
+
   return (
-    <Animatable.View
-      className="mr-5"
-      animation={activeItem === item.$id ? zoomIn : zoomOut}
-      duration={500}
-    >
+    <Animated.View className="mr-5" style={animatedStyle}>
       {play ? (
         <Video
           source={{ uri: item.video }}
@@ -45,7 +41,11 @@ const TrendingItem = ({ activeItem, item }) => {
           useNativeControls
           shouldPlay
           onPlaybackStatusUpdate={(status) => {
-            if (status.didJustFinish) {
+            if (
+              "isLoaded" in status &&
+              status.isLoaded &&
+              status.didJustFinish
+            ) {
               setPlay(false);
             }
           }}
@@ -65,13 +65,13 @@ const TrendingItem = ({ activeItem, item }) => {
           />
 
           <Image
-            source={icons.play}
+            source={require("@/assets/icons/play.png")}
             className="w-12 h-12 absolute"
             resizeMode="contain"
           />
         </TouchableOpacity>
       )}
-    </Animatable.View>
+    </Animated.View>
   );
 };
 
@@ -93,10 +93,8 @@ const Trending = ({ posts }) => {
         <TrendingItem activeItem={activeItem} item={item} />
       )}
       onViewableItemsChanged={viewableItemsChanged}
-      viewabilityConfig={{
-        itemVisiblePercentThreshold: 70,
-      }}
-      contentOffset={{ x: 170 }}
+      viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
+      contentOffset={{ x: 170, y: 0 }}
     />
   );
 };

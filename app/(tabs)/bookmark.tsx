@@ -1,11 +1,12 @@
 import { FlatList, RefreshControl, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import useAppwrite from "../../lib/useSupabase";
-import { getBookmarkPosts } from "../../lib/supabase";
 import { useState } from "react";
 
+import useSupabase from "@/lib/useSupabase";
+import { getBookmarkPosts } from "@/lib/supabase";
+import Page from "@/components/Page";
+
 const Bookmark = () => {
-  const { data: posts, refetch } = useAppwrite(getBookmarkPosts);
+  const { data: posts, refetch } = useSupabase(getBookmarkPosts);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -16,12 +17,7 @@ const Bookmark = () => {
   };
 
   return (
-    <SafeAreaView
-      className="bg-primary h-full"
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+    <Page>
       <FlatList
         className="px-4 my-6"
         ListHeaderComponent={() => (
@@ -34,8 +30,11 @@ const Bookmark = () => {
         )}
         data={posts}
         renderItem={({ item }) => <Text>{item.title}</Text>}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
-    </SafeAreaView>
+    </Page>
   );
 };
 

@@ -3,13 +3,31 @@ import { useFonts } from "expo-font";
 import "react-native-url-polyfill/auto";
 import { SplashScreen, Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AppState } from "react-native";
+import { StatusBar } from "expo-status-bar";
 
-import GlobalProvider from "../context/GlobalProvider";
+import { supabase } from "@/lib/supabase";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
+
+// Tells Supabase Auth to continuously refresh the session automatically if
+// the app is in the foreground. When this is added, you will continue to receive
+// `onAuthStateChange` events with the `TOKEN_REFRESHED` or `SIGNED_OUT` event
+// if the user's session is terminated. This should only be registered once.
+AppState.addEventListener("change", (state) => {
+  if (state === "active") {
+    supabase.auth.startAutoRefresh();
+  } else {
+    supabase.auth.stopAutoRefresh();
+  }
+});
+
+export const unstable_settings = {
+  initialRouteName: "index",
+};
 
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
@@ -42,17 +60,15 @@ const RootLayout = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <GlobalProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="search/[query]"
-            options={{ headerShown: false }}
-          />
+      <>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="index" />
+          <Stack.Screen name="search/[query]" />
         </Stack>
-      </GlobalProvider>
+        <StatusBar backgroundColor="#161622" style="light" />
+      </>
     </QueryClientProvider>
   );
 };

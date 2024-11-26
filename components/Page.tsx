@@ -1,14 +1,20 @@
-import { ScrollView } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const Page = ({ children }: { children: React.ReactNode }) => {
+const SAFE_TABBAR_HEIGHT = 0;
+
+interface PageProps {
+  children: React.ReactNode;
+}
+
+const Page = ({ children }: PageProps) => {
   return (
     <SafeAreaView
-      // @ts-ignore
       className="bg-primary h-full"
       edges={["right", "left", "top"]}
     >
       {children}
+      <View style={{ height: SAFE_TABBAR_HEIGHT }} />
     </SafeAreaView>
   );
 };

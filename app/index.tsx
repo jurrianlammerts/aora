@@ -3,27 +3,24 @@ import { Redirect, router } from "expo-router";
 import { View, Text, Image, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { images } from "../constants";
-import { CustomButton, Loader } from "../components";
-import { useGlobalContext } from "../context/GlobalProvider";
+import CustomButton from "@/components/CustomButton";
+import Loader from "@/components/Loader";
+import useAuthStore from "@/store/auth";
+import useAuth from "@/hooks/use-auth";
 
 const Welcome = () => {
-  const { loading, isLogged } = useGlobalContext();
+  const { loading, isLoggedIn } = useAuthStore();
+  useAuth();
 
-  if (!loading && isLogged) return <Redirect href="/home" />;
+  if (!loading && isLoggedIn) return <Redirect href="/home" />;
 
   return (
     <SafeAreaView className="bg-primary h-full">
       <Loader isLoading={loading} />
-
-      <ScrollView
-        contentContainerStyle={{
-          height: "100%",
-        }}
-      >
+      <ScrollView contentContainerStyle={{ height: "100%" }}>
         <View className="w-full flex justify-center items-center h-full px-4">
           <Image
-            source={images.cards}
+            source={require("@/assets/images/cards.png")}
             className="max-w-[380px] w-full h-[298px]"
             resizeMode="contain"
           />
@@ -36,7 +33,7 @@ const Welcome = () => {
             </Text>
 
             <Image
-              source={images.path}
+              source={require("@/assets/images/path.png")}
               className="w-[136px] h-[15px] absolute -bottom-2 -right-8"
               resizeMode="contain"
             />
@@ -49,12 +46,11 @@ const Welcome = () => {
 
           <CustomButton
             title="Continue with Email"
-            handlePress={() => router.push("/sign-in")}
+            handlePress={() => router.navigate("/sign-in")}
             containerStyles="w-full mt-7"
           />
         </View>
       </ScrollView>
-
       <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>
   );

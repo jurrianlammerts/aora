@@ -2,9 +2,21 @@ import { useState } from "react";
 import { ResizeMode, Video } from "expo-av";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 
-import { icons } from "../constants";
+interface VideoCardProps {
+  title: string;
+  creator: string;
+  avatar: string;
+  thumbnail: string;
+  video: string;
+}
 
-const VideoCard = ({ title, creator, avatar, thumbnail, video }) => {
+const VideoCard = ({
+  title,
+  creator,
+  avatar,
+  thumbnail,
+  video,
+}: VideoCardProps) => {
   const [play, setPlay] = useState(false);
 
   return (
@@ -36,7 +48,11 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video }) => {
         </View>
 
         <View className="pt-2">
-          <Image source={icons.menu} className="w-5 h-5" resizeMode="contain" />
+          <Image
+            source={require("@/assets/icons/menu.png")}
+            className="w-5 h-5"
+            resizeMode="contain"
+          />
         </View>
       </View>
 
@@ -48,7 +64,7 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video }) => {
           useNativeControls
           shouldPlay
           onPlaybackStatusUpdate={(status) => {
-            if (status.didJustFinish) {
+            if ("didJustFinish" in status && status.didJustFinish) {
               setPlay(false);
             }
           }}
@@ -66,7 +82,7 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video }) => {
           />
 
           <Image
-            source={icons.play}
+            source={require("@/assets/icons/play.png")}
             className="w-12 h-12 absolute"
             resizeMode="contain"
           />

@@ -1,20 +1,19 @@
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlatList, Image, RefreshControl, Text, View } from "react-native";
+import { FlatList, RefreshControl, Text, View } from "react-native";
 
-import { images } from "../../constants";
-import useAppwrite from "../../lib/useSupabase";
-import {
-  getAllPosts,
-  getCurrentUser,
-  getLatestPosts,
-} from "../../lib/supabase";
-import { EmptyState, SearchInput, Trending, VideoCard } from "../../components";
+import useSupabase from "@/lib/useSupabase";
+import { getAllPosts, getCurrentUser, getLatestPosts } from "@/lib/supabase";
+import EmptyState from "@/components/EmptyState";
+import SearchInput from "@/components/SearchInput";
+import Trending from "@/components/Trending";
+import VideoCard from "@/components/VideoCard";
+import Page from "@/components/Page";
 
 const Home = () => {
-  const { data: posts, refetch } = useAppwrite(getAllPosts);
-  const { data: latestPosts } = useAppwrite(getLatestPosts);
-  const { data: user } = useAppwrite(getCurrentUser);
+  const { data: posts, refetch } = useSupabase(getAllPosts);
+  const { data: latestPosts } = useSupabase(getLatestPosts);
+  const { data: user } = useSupabase(getCurrentUser);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -30,10 +29,10 @@ const Home = () => {
   //  we cannot do that with just scrollview as there's both horizontal and vertical scroll (two flat lists, within trending)
 
   return (
-    <SafeAreaView className="bg-primary">
+    <Page>
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <VideoCard
             title={item.title}
@@ -77,7 +76,7 @@ const Home = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
-    </SafeAreaView>
+    </Page>
   );
 };
 

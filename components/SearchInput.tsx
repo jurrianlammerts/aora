@@ -2,9 +2,12 @@ import { useState } from "react";
 import { router, usePathname } from "expo-router";
 import { View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
 
-import { icons } from "../constants";
+interface SearchInputProps {
+  initialQuery?: string;
+  refetch?: () => void;
+}
 
-const SearchInput = ({ initialQuery }) => {
+const SearchInput = ({ initialQuery, refetch }: SearchInputProps) => {
   const pathname = usePathname();
   const [query, setQuery] = useState(initialQuery || "");
 
@@ -28,9 +31,14 @@ const SearchInput = ({ initialQuery }) => {
 
           if (pathname.startsWith("/search")) router.setParams({ query });
           else router.push(`/search/${query}`);
+          refetch?.();
         }}
       >
-        <Image source={icons.search} className="w-5 h-5" resizeMode="contain" />
+        <Image
+          source={require("@/assets/icons/search.png")}
+          className="w-5 h-5"
+          resizeMode="contain"
+        />
       </TouchableOpacity>
     </View>
   );

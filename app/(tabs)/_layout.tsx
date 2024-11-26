@@ -2,11 +2,21 @@ import { StatusBar } from "expo-status-bar";
 import { Redirect, Tabs } from "expo-router";
 import { Image, Text, View } from "react-native";
 
-import { icons } from "../../constants";
-import { Loader } from "../../components";
-import { useGlobalContext } from "../../context/GlobalProvider";
+import Loader from "@/components/Loader";
+import useAuthStore from "@/store/auth";
 
-const TabIcon = ({ icon, color, name, focused }) => {
+export const unstable_settings = {
+  initialRouteName: "home",
+};
+
+interface TabIconProps {
+  icon: any;
+  color: string;
+  name: string;
+  focused: boolean;
+}
+
+const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
   return (
     <View className="flex items-center justify-center gap-2 pt-2">
       <Image
@@ -26,9 +36,9 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabLayout = () => {
-  const { loading, isLogged } = useGlobalContext();
+  const { loading, isLoggedIn } = useAuthStore();
 
-  if (!loading && !isLogged) return <Redirect href="/sign-in" />;
+  if (!loading && !isLoggedIn) return <Redirect href="/sign-in" />;
 
   return (
     <>
@@ -52,7 +62,7 @@ const TabLayout = () => {
             title: "Home",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.home}
+                icon={require("@/assets/icons/home.png")}
                 color={color}
                 name="Home"
                 focused={focused}
@@ -66,7 +76,7 @@ const TabLayout = () => {
             title: "Bookmark",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.bookmark}
+                icon={require("@/assets/icons/bookmark.png")}
                 color={color}
                 name="Bookmark"
                 focused={focused}
@@ -81,7 +91,7 @@ const TabLayout = () => {
             title: "Create",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.plus}
+                icon={require("@/assets/icons/plus.png")}
                 color={color}
                 name="Create"
                 focused={focused}
@@ -95,7 +105,7 @@ const TabLayout = () => {
             title: "Profile",
             tabBarIcon: ({ color, focused }) => (
               <TabIcon
-                icon={icons.profile}
+                icon={require("@/assets/icons/profile.png")}
                 color={color}
                 name="Profile"
                 focused={focused}
