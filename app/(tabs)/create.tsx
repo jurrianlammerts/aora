@@ -23,14 +23,15 @@ const Create = () => {
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
     title: "",
-    video: null,
-    thumbnail: null,
+    thumbnailAsset: null,
+    videoAsset: null,
     prompt: "",
   });
 
   const openPicker = async (selectType) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
+      base64: true,
       allowsEditing: true,
       quality: 1,
     });
@@ -39,14 +40,14 @@ const Create = () => {
       if (selectType === "image") {
         setForm({
           ...form,
-          thumbnail: result.assets[0],
+          thumbnailAsset: result.assets[0],
         });
       }
 
       if (selectType === "video") {
         setForm({
           ...form,
-          video: result.assets[0],
+          videoAsset: result.assets[0],
         });
       }
     } else {
@@ -60,8 +61,8 @@ const Create = () => {
     if (
       form.prompt === "" ||
       form.title === "" ||
-      !form.thumbnail ||
-      !form.video
+      !form.thumbnailAsset ||
+      !form.videoAsset
     ) {
       return Alert.alert("Please provide all fields");
     }
@@ -78,12 +79,12 @@ const Create = () => {
     } catch (error) {
       Alert.alert("Error", error.message);
     } finally {
-      setForm({
-        title: "",
-        video: null,
-        thumbnail: null,
-        prompt: "",
-      });
+      // setForm({
+      //   title: "",
+      //   video: null,
+      //   thumbnail: null,
+      //   prompt: "",
+      // });
 
       setUploading(false);
     }
@@ -110,9 +111,9 @@ const Create = () => {
           </Text>
 
           <TouchableOpacity onPress={() => openPicker("video")}>
-            {form.video ? (
+            {form.videoAsset ? (
               <Video
-                source={{ uri: form.video.uri }}
+                source={{ uri: form.videoAsset.uri }}
                 className="w-full h-64 rounded-2xl"
                 useNativeControls
                 resizeMode={ResizeMode.COVER}
@@ -139,9 +140,9 @@ const Create = () => {
           </Text>
 
           <TouchableOpacity onPress={() => openPicker("image")}>
-            {form.thumbnail ? (
+            {form.thumbnailAsset ? (
               <Image
-                source={{ uri: form.thumbnail.uri }}
+                source={{ uri: form.thumbnailAsset.uri }}
                 resizeMode="cover"
                 className="w-full h-64 rounded-2xl"
               />

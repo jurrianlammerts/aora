@@ -1,31 +1,55 @@
 import { supabase } from "@/lib/supabase";
 import useAuthStore from "@/store/auth";
+import { Session } from "@supabase/supabase-js";
 import { useEffect } from "react";
 
 export default function useAuth() {
   const { setSession, setLoggedIn, getUser, setLoading } = useAuthStore();
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      const user = await getUser();
-      if (session?.user && user) {
-        setLoggedIn(true);
+    // Handle initial session check
+    const checkSession = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        setSession(session);
+        await updateAuthState(session);
+      } catch (error) {
+        console.error("Error checking session:", error);
         setLoading(false);
       }
-    });
+    };
 
-    supabase.auth.onAuthStateChange(async (_event, session) => {
+    // Handle auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setLoading(true);
       setSession(session);
-      const user = await getUser();
-      if (session?.user && user) {
-        setLoggedIn(true);
+      await updateAuthState(session);
+    });
+
+    // Helper function to update auth state based on session
+    const updateAuthState = async (session: Session | null) => {
+      try {
+        let user = null;
+        if (session?.user) {
+          user = await getUser();
+        }
+        setLoggedIn(!!user);
         setLoading(false);
-      } else {
-        setLoggedIn(false);
+      } catch (error) {
+        console.error("Error updating auth state:", error);
         setLoading(false);
       }
-    });
+    };
+
+    checkSession();
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 }

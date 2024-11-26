@@ -6,9 +6,11 @@ import CustomButton from "@/components/CustomButton";
 interface EmptyStateProps {
   title: string;
   subtitle: string;
+  href?: string;
+  label?: string;
 }
 
-const EmptyState = ({ title, subtitle }: EmptyStateProps) => {
+const EmptyState = ({ title, subtitle, href, label }: EmptyStateProps) => {
   return (
     <View className="flex justify-center items-center px-4">
       <Image
@@ -23,8 +25,8 @@ const EmptyState = ({ title, subtitle }: EmptyStateProps) => {
       </Text>
 
       <CustomButton
-        title="Back to Explore"
-        handlePress={() => router.navigate("/home")}
+        title={label || "Back to Explore"}
+        handlePress={() => router.navigate(href || "/home")}
         containerStyles="w-full my-5"
       />
     </View>

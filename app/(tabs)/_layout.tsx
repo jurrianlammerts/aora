@@ -38,7 +38,7 @@ const TabIcon = ({ icon, color, name, focused }: TabIconProps) => {
 const TabLayout = () => {
   const { loading, isLoggedIn } = useAuthStore();
 
-  if (!loading && !isLoggedIn) return <Redirect href="/sign-in" />;
+  if (!loading && !isLoggedIn) return <Redirect href="/" />;
 
   return (
     <>

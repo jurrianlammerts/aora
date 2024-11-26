@@ -1,7 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AuthError, createClient, User } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
+import * as Crypto from "expo-crypto";
+import { Buffer } from "buffer";
+
 import { UserType } from "types";
+
+global.Buffer = global.Buffer || Buffer;
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
@@ -122,36 +128,53 @@ export async function signOut() {
 
 // Upload File
 export async function uploadFile(
-  file: ImagePicker.ImagePickerResult,
+  file: ImagePicker.ImagePickerAsset,
   type: "image" | "video"
 ) {
-  if (!file.assets || !file.assets[0]) return;
+  // console.log("[uploadFile] Starting upload with file:", file);
+  console.log("[uploadFile] Upload type:", type);
 
-  const asset = file.assets[0];
+  if (!file.uri) {
+    console.log("[uploadFile] No URI found in file");
+    return;
+  }
 
   try {
-    // Generate a unique filename
-    const filename = `${Date.now()}_${asset.fileName || "file"}`;
+    const extension = type === "image" ? "jpeg" : "mp4";
+    const mimeType = type === "image" ? "image/jpeg" : "video/mp4";
+    const filename = `${Date.now()}_${file.fileName || "file"}.${extension}`;
+    console.log("[uploadFile] Generated filename:", filename);
 
-    // Upload file to storage
+    // Fetch the file data
+    const response = await fetch(file.uri);
+    const arrayBuffer = await response.arrayBuffer();
+
+    console.log("[uploadFile] ArrayBuffer:", arrayBuffer);
+
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("videos") // Replace with your storage bucket name
-      .upload(filename, await fetch(asset.uri).then((r) => r.blob()), {
-        contentType:
-          asset.type || (type === "image" ? "image/jpeg" : "video/mp4"),
+      .from("videos")
+      .upload(filename, arrayBuffer, {
+        contentType: mimeType,
+        cacheControl: "3600",
       });
 
-    if (uploadError) throw uploadError;
+    if (uploadError) {
+      console.error("[uploadFile] Upload error:", uploadError);
+      throw uploadError;
+    }
+
+    console.log("[uploadFile] Upload successful:", uploadData);
 
     // Get public URL
+    console.log("[uploadFile] Getting public URL...");
     const {
       data: { publicUrl },
-    } = supabase.storage
-      .from("videos") // Same bucket name as above
-      .getPublicUrl(filename);
+    } = supabase.storage.from("videos").getPublicUrl(filename);
 
+    console.log("[uploadFile] Public URL generated:", publicUrl);
     return publicUrl;
   } catch (error) {
+    console.error("[uploadFile] Error:", error);
     throw new Error(`[uploadFile] ${error}`);
   }
 }
@@ -159,20 +182,24 @@ export async function uploadFile(
 // Create Video Post
 export async function createVideoPost(form: {
   title: string;
-  thumbnail: ImagePicker.ImagePickerResult;
-  video: ImagePicker.ImagePickerResult;
+  thumbnailAsset: ImagePicker.ImagePickerAsset;
+  videoAsset: ImagePicker.ImagePickerAsset;
   prompt: string;
   userId: string;
 }) {
+  console.log("[createVideoPost] Starting post creation...", {});
   try {
     const [thumbnailUrl, videoUrl] = await Promise.all([
-      uploadFile(form.thumbnail, "image"),
-      uploadFile(form.video, "video"),
+      uploadFile(form.thumbnailAsset, "image"),
+      uploadFile(form.videoAsset, "video"),
     ]);
+
+    const UUID = Crypto.randomUUID();
 
     const { data, error } = await supabase
       .from("video_posts")
       .insert({
+        id: UUID,
         title: form.title,
         thumbnail: thumbnailUrl,
         video: videoUrl,
@@ -181,11 +208,13 @@ export async function createVideoPost(form: {
       })
       .select();
 
+    console.log({ error });
+
     if (error) throw error;
 
     return data[0];
   } catch (error) {
-    throw new Error(`[createVideoPost] ${error}`);
+    throw new Error(`[createVideoPost] ${JSON.stringify(error)}`);
   }
 }
 

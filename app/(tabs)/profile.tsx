@@ -15,7 +15,6 @@ const Profile = () => {
 
   const logout = async () => {
     await signOut();
-    router.replace("/index");
   };
 
   return (
@@ -36,6 +35,8 @@ const Profile = () => {
           <EmptyState
             title="No Videos Found"
             subtitle="No videos found for this profile"
+            href="/create"
+            label="Create Video"
           />
         )}
         ListHeaderComponent={() => (
