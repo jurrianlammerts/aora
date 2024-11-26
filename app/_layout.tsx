@@ -61,7 +61,12 @@ const RootLayout = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <>
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: "#161622" },
+          }}
+        >
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="index" />

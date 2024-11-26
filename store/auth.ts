@@ -1,5 +1,5 @@
-import { signIn, signUp, signOut } from "@/lib/supabase";
-import { AuthError, Session, User } from "@supabase/supabase-js";
+import { signIn, signUp, signOut, getCurrentUser } from "@/lib/supabase";
+import { Session } from "@supabase/supabase-js";
 import { UserType } from "types";
 import { create } from "zustand";
 
@@ -8,7 +8,9 @@ interface AuthState {
   isLoggedIn: boolean;
   session: Session | null;
   user: UserType | null;
+  setLoading: (loading: boolean) => void;
   setUser: (user: UserType | null) => void;
+  getUser: () => Promise<UserType | null>;
   setLoggedIn: (isLoggedIn: boolean) => void;
   setSession: (session: Session | null) => void;
   signIn: (email: string, password: string) => Promise<UserType | null>;
@@ -21,11 +23,17 @@ interface AuthState {
 }
 
 const useAuthStore = create<AuthState>((set) => ({
-  loading: false,
+  loading: true,
   session: null,
   isLoggedIn: false,
   user: null,
+  setLoading: (loading) => set({ loading }),
   setUser: (user) => set({ user }),
+  getUser: async () => {
+    const user = await getCurrentUser();
+    set({ user });
+    return user;
+  },
   setLoggedIn: (isLoggedIn) => set({ isLoggedIn }),
   setSession: (session) => set({ session }),
   signIn: async (email, password) => {

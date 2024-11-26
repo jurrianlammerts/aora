@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { FlatList, RefreshControl, Text, View } from "react-native";
 
 import useSupabase from "@/lib/useSupabase";
-import { getAllPosts, getCurrentUser, getLatestPosts } from "@/lib/supabase";
+import { getAllPosts, getLatestPosts } from "@/lib/supabase";
 import EmptyState from "@/components/EmptyState";
 import SearchInput from "@/components/SearchInput";
 import Trending from "@/components/Trending";
 import VideoCard from "@/components/VideoCard";
 import Page from "@/components/Page";
+import useAuthStore from "@/store/auth";
 
 const Home = () => {
+  const { user } = useAuthStore();
   const { data: posts, refetch } = useSupabase(getAllPosts);
   const { data: latestPosts } = useSupabase(getLatestPosts);
-  const { data: user } = useSupabase(getCurrentUser);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -21,12 +21,6 @@ const Home = () => {
     await refetch();
     setRefreshing(false);
   };
-
-  // one flatlist
-  // with list header
-  // and horizontal flatlist
-
-  //  we cannot do that with just scrollview as there's both horizontal and vertical scroll (two flat lists, within trending)
 
   return (
     <Page>
@@ -50,7 +44,7 @@ const Home = () => {
                   Welcome Back
                 </Text>
                 <Text className="text-2xl font-psemibold text-white">
-                  {user?.username}
+                  {user?.username ?? " "}
                 </Text>
               </View>
             </View>
