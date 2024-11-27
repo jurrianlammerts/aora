@@ -1,16 +1,24 @@
 import '../global.css';
-import { useEffect } from 'react';
-import { useFonts } from 'expo-font';
-import 'react-native-url-polyfill/auto';
-import { SplashScreen, Stack } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AppState } from 'react-native';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { AppState } from 'react-native';
+import 'react-native-url-polyfill/auto';
 
+import { PRIMARY_COLOR } from '@/constants';
 import { supabase } from '@/lib/supabase';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// Set the animation options. This is optional.
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
 
 const queryClient = new QueryClient();
 
@@ -63,16 +71,13 @@ const RootLayout = () => {
     <QueryClientProvider client={queryClient}>
       <>
         <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: '#161622' },
-          }}>
+          screenOptions={{ headerShown: false, contentStyle: { backgroundColor: PRIMARY_COLOR } }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="index" />
           <Stack.Screen name="search/[query]" />
         </Stack>
-        <StatusBar backgroundColor="#161622" style="light" />
+        <StatusBar backgroundColor={PRIMARY_COLOR} style="light" />
       </>
     </QueryClientProvider>
   );

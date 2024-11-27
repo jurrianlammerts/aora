@@ -1,21 +1,22 @@
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
-import Loader from "@/components/Loader";
-import useAuthStore from "@/store/auth";
+import Loader from '@/components/Loader';
+import { PRIMARY_COLOR } from '@/constants';
+import useAuthStore from '@/store/auth';
 
 const AuthLayout = () => {
   const { loading } = useAuthStore();
 
   return (
     <>
-      <Stack>
-        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-        <Stack.Screen name="sign-up" options={{ headerShown: false }} />
-        <Stack.Screen name="confirm" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="sign-in" />
+        <Stack.Screen name="sign-up" />
+        <Stack.Screen name="confirm" />
       </Stack>
       <Loader isLoading={loading} />
-      <StatusBar backgroundColor="#161622" style="light" />
+      <StatusBar backgroundColor={PRIMARY_COLOR} style="light" />
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery } from '@tanstack/react-query';
 
 const useSupabase = (fn: any) => {
   const { data, isLoading, refetch } = useQuery({

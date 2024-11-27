@@ -1,31 +1,24 @@
-import { useState } from "react";
-import { Link, router } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  View,
-  Text,
-  ScrollView,
-  Dimensions,
-  Alert,
-  KeyboardAvoidingView,
-} from "react-native";
+import { Link, router } from 'expo-router';
+import { useState } from 'react';
+import { View, Text, ScrollView, Dimensions, Alert, KeyboardAvoidingView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { getCurrentUser, signIn } from "@/lib/supabase";
-import useAuthStore from "@/store/auth";
-import FormField from "@/components/FormField";
-import CustomButton from "@/components/CustomButton";
+import CustomButton from '@/components/CustomButton';
+import FormField from '@/components/FormField';
+import { getCurrentUser, signIn } from '@/lib/supabase';
+import useAuthStore from '@/store/auth';
 
 const SignIn = () => {
   const { setUser } = useAuthStore();
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   });
 
   const submit = async () => {
-    if (form.email === "" || form.password === "") {
-      Alert.alert("Error", "Please fill in all fields");
+    if (form.email === '' || form.password === '') {
+      Alert.alert('Error', 'Please fill in all fields');
     }
 
     setSubmitting(true);
@@ -35,23 +28,22 @@ const SignIn = () => {
       const result = await getCurrentUser();
       setUser(result);
 
-      router.replace("/home");
-    } catch (error) {
-      Alert.alert("Error", error.message);
+      router.replace('/home');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <SafeAreaView className="bg-primary h-full">
+    <SafeAreaView className="h-full bg-primary">
       <KeyboardAvoidingView behavior="padding">
         <ScrollView>
           <View
-            className="w-full flex justify-center h-full px-4 my-6"
-            style={{ minHeight: Dimensions.get("window").height - 100 }}
-          >
-            <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
+            className="my-6 flex h-full w-full justify-center px-4"
+            style={{ minHeight: Dimensions.get('window').height - 100 }}>
+            <Text className="mt-10 font-psemibold text-2xl font-semibold text-white">
               Log in to Aora
             </Text>
             <FormField
@@ -73,14 +65,9 @@ const SignIn = () => {
               containerStyles="mt-7"
               isLoading={isSubmitting}
             />
-            <View className="flex justify-center pt-5 flex-row gap-2">
-              <Text className="text-lg text-gray-100 font-pregular">
-                Don't have an account?
-              </Text>
-              <Link
-                href="/sign-up"
-                className="text-lg font-psemibold text-secondary"
-              >
+            <View className="flex flex-row justify-center gap-2 pt-5">
+              <Text className="font-pregular text-lg text-gray-100">Don't have an account?</Text>
+              <Link href="/sign-up" className="font-psemibold text-lg text-secondary">
                 Signup
               </Link>
             </View>

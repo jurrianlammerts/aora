@@ -1,0 +1,9 @@
+export const PRIMARY_COLOR = '#161622';
+export const SECONDARY_COLOR = '#4ADBC8';
+export const SECONDARY_COLOR_100 = '#5adecd';
+export const SECONDARY_COLOR_200 = '#6be2d2';
+export const TERTIARY_COLOR = '#9A4C95';
+export const BLACK_COLOR = '#000';
+export const BLACK_COLOR_100 = '#1E1E2D';
+export const BLACK_COLOR_200 = '#232533';
+export const GRAY_COLOR = '#CDCDE0';

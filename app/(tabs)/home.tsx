@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { FlatList, RefreshControl, Text, View } from "react-native";
+import { useState } from 'react';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 
-import useSupabase from "@/lib/useSupabase";
-import { getAllPosts, getLatestPosts } from "@/lib/supabase";
-import EmptyState from "@/components/EmptyState";
-import SearchInput from "@/components/SearchInput";
-import Trending from "@/components/Trending";
-import VideoCard from "@/components/VideoCard";
-import Page from "@/components/Page";
-import useAuthStore from "@/store/auth";
+import EmptyState from '@/components/EmptyState';
+import Page from '@/components/Page';
+import SearchInput from '@/components/SearchInput';
+import Trending from '@/components/Trending';
+import VideoCard from '@/components/VideoCard';
+import { getAllPosts, getLatestPosts } from '@/lib/supabase';
+import useSupabase from '@/lib/useSupabase';
+import useAuthStore from '@/store/auth';
 
 const Home = () => {
   const { user } = useAuthStore();
@@ -25,7 +25,7 @@ const Home = () => {
   return (
     <Page>
       <FlatList
-        data={posts}
+        data={posts ?? []}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <VideoCard
@@ -37,38 +37,24 @@ const Home = () => {
           />
         )}
         ListHeaderComponent={() => (
-          <View className="flex my-6 px-4 space-y-6">
-            <View className="flex justify-between items-start flex-row mb-6">
+          <View className="my-6 flex space-y-6 px-4">
+            <View className="mb-6 flex flex-row items-start justify-between">
               <View>
-                <Text className="font-pmedium text-sm text-gray-100">
-                  Welcome Back
-                </Text>
-                <Text className="text-2xl font-psemibold text-white">
-                  {user?.username ?? " "}
-                </Text>
+                <Text className="font-pmedium text-sm text-gray-100">Welcome Back</Text>
+                <Text className="font-psemibold text-2xl text-white">{user?.username ?? ' '}</Text>
               </View>
             </View>
-
             <SearchInput />
-
-            <View className="w-full flex-1 pt-5 pb-8">
-              <Text className="text-lg font-pregular text-gray-100 mb-3">
-                Latest Videos
-              </Text>
-
+            <View className="w-full flex-1 pb-8 pt-5">
+              <Text className="mb-3 font-pregular text-lg text-gray-100">Latest Videos</Text>
               <Trending posts={latestPosts ?? []} />
             </View>
           </View>
         )}
         ListEmptyComponent={() => (
-          <EmptyState
-            title="No Videos Found"
-            subtitle="No videos created yet"
-          />
+          <EmptyState title="No Videos Found" subtitle="No videos created yet" />
         )}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
     </Page>
   );

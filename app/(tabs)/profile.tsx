@@ -1,17 +1,16 @@
-import { router } from "expo-router";
-import { View, Image, FlatList, TouchableOpacity } from "react-native";
+import { View, Image, FlatList, TouchableOpacity } from 'react-native';
 
-import useSupabase from "@/lib/useSupabase";
-import { getUserPosts } from "@/lib/supabase";
-import useAuthStore from "@/store/auth";
-import Page from "@/components/Page";
-import EmptyState from "@/components/EmptyState";
-import InfoBox from "@/components/InfoBox";
-import VideoCard from "@/components/VideoCard";
+import EmptyState from '@/components/EmptyState';
+import InfoBox from '@/components/InfoBox';
+import Page from '@/components/Page';
+import VideoCard from '@/components/VideoCard';
+import { getUserPosts } from '@/lib/supabase';
+import useSupabase from '@/lib/useSupabase';
+import useAuthStore from '@/store/auth';
 
 const Profile = () => {
   const { user, signOut } = useAuthStore();
-  const { data: posts } = useSupabase(() => getUserPosts(user.id));
+  const { data: posts } = useSupabase(() => getUserPosts(user?.id));
 
   const logout = async () => {
     await signOut();
@@ -40,32 +39,22 @@ const Profile = () => {
           />
         )}
         ListHeaderComponent={() => (
-          <View className="w-full flex justify-center items-center mt-6 mb-12 px-4">
-            <TouchableOpacity
-              onPress={logout}
-              className="flex w-full items-end mb-10"
-            >
+          <View className="mb-12 mt-6 flex w-full items-center justify-center px-4">
+            <TouchableOpacity onPress={logout} className="mb-10 flex w-full items-end">
               <Image
-                source={require("@/assets/icons/logout.png")}
+                source={require('@/assets/icons/logout.png')}
                 resizeMode="contain"
-                className="w-6 h-6"
+                className="h-6 w-6"
               />
             </TouchableOpacity>
-
-            <View className="w-16 h-16 border border-secondary rounded-lg flex justify-center items-center">
+            <View className="flex h-16 w-16 items-center justify-center rounded-lg border border-secondary">
               <Image
                 source={{ uri: user?.avatar }}
-                className="w-[90%] h-[90%] rounded-lg"
+                className="h-[90%] w-[90%] rounded-lg"
                 resizeMode="cover"
               />
             </View>
-
-            <InfoBox
-              title={user?.username}
-              containerStyles="mt-5"
-              titleStyles="text-lg"
-            />
-
+            <InfoBox title={user?.username} containerStyles="mt-5" titleStyles="text-lg" />
             <View className="mt-5 flex flex-row">
               <InfoBox
                 title={posts.length || 0}
@@ -73,11 +62,7 @@ const Profile = () => {
                 titleStyles="text-xl"
                 containerStyles="mr-10"
               />
-              <InfoBox
-                title="1.2k"
-                subtitle="Followers"
-                titleStyles="text-xl"
-              />
+              <InfoBox title="1.2k" subtitle="Followers" titleStyles="text-xl" />
             </View>
           </View>
         )}

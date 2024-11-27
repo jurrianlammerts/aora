@@ -1,4 +1,4 @@
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface PageProps {
   children: React.ReactNode;
@@ -6,10 +6,7 @@ interface PageProps {
 
 const Page = ({ children }: PageProps) => {
   return (
-    <SafeAreaView
-      className="bg-primary flex flex-1"
-      edges={["right", "left", "top"]}
-    >
+    <SafeAreaView className="flex flex-1 bg-primary" edges={['right', 'left', 'top']}>
       {children}
     </SafeAreaView>
   );

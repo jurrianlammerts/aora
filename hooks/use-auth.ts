@@ -1,7 +1,8 @@
-import { supabase } from "@/lib/supabase";
-import useAuthStore from "@/store/auth";
-import { Session } from "@supabase/supabase-js";
-import { useEffect } from "react";
+import { Session } from '@supabase/supabase-js';
+import { useEffect } from 'react';
+
+import { supabase } from '@/lib/supabase';
+import useAuthStore from '@/store/auth';
 
 export default function useAuth() {
   const { setSession, setLoggedIn, getUser, setLoading } = useAuthStore();
@@ -16,7 +17,7 @@ export default function useAuth() {
         setSession(session);
         await updateAuthState(session);
       } catch (error) {
-        console.error("Error checking session:", error);
+        console.error('Error checking session:', error);
         setLoading(false);
       }
     };
@@ -40,7 +41,7 @@ export default function useAuth() {
         setLoggedIn(!!user);
         setLoading(false);
       } catch (error) {
-        console.error("Error updating auth state:", error);
+        console.error('Error updating auth state:', error);
         setLoading(false);
       }
     };

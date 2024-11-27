@@ -1,7 +1,8 @@
-import { signIn, signUp, signOut, getCurrentUser } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
-import { UserType } from "types";
-import { create } from "zustand";
+import { Session } from '@supabase/supabase-js';
+import { UserType } from 'types';
+import { create } from 'zustand';
+
+import { signIn, signUp, signOut, getCurrentUser } from '@/lib/supabase';
 
 interface AuthState {
   loading: boolean;
@@ -14,11 +15,7 @@ interface AuthState {
   setLoggedIn: (isLoggedIn: boolean) => void;
   setSession: (session: Session | null) => void;
   signIn: (email: string, password: string) => Promise<UserType | null>;
-  signUp: (
-    email: string,
-    password: string,
-    username: string
-  ) => Promise<UserType | null>;
+  signUp: (email: string, password: string, username: string) => Promise<UserType | null>;
   signOut: () => Promise<void>;
 }
 

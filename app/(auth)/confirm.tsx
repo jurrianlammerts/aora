@@ -1,34 +1,27 @@
-import { useState } from "react";
-import { Link, router } from "expo-router";
-import {
-  View,
-  Text,
-  ScrollView,
-  Dimensions,
-  Alert,
-  KeyboardAvoidingView,
-} from "react-native";
+import { Link, router } from 'expo-router';
+import { useState } from 'react';
+import { View, Text, ScrollView, Dimensions, Alert, KeyboardAvoidingView } from 'react-native';
 
-import CustomButton from "@/components/CustomButton";
-import FormField from "@/components/FormField";
-import Page from "@/components/Page";
+import CustomButton from '@/components/CustomButton';
+import FormField from '@/components/FormField';
+import Page from '@/components/Page';
 
 const Confirm = () => {
   const [isSubmitting, setSubmitting] = useState(false);
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState('');
 
   const submit = async () => {
-    if (code === "") {
-      Alert.alert("Error", "Please enter the confirmation code");
+    if (code === '') {
+      Alert.alert('Error', 'Please enter the confirmation code');
       return;
     }
 
     setSubmitting(true);
     try {
       // TODO: Add confirmation code verification logic here
-      router.replace("/(tabs)/home");
-    } catch (error) {
-      Alert.alert("Error", error.message);
+      router.replace('/(tabs)/home');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
     } finally {
       setSubmitting(false);
     }
@@ -39,15 +32,14 @@ const Confirm = () => {
       <KeyboardAvoidingView behavior="padding">
         <ScrollView>
           <View
-            className="w-full flex justify-center h-full px-4 my-6"
+            className="my-6 flex h-full w-full justify-center px-4"
             style={{
-              minHeight: Dimensions.get("window").height - 100,
-            }}
-          >
-            <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
+              minHeight: Dimensions.get('window').height - 100,
+            }}>
+            <Text className="mt-10 font-psemibold text-2xl font-semibold text-white">
               Confirm Your Email
             </Text>
-            <Text className="text-gray-300 mt-4 font-pregular">
+            <Text className="mt-4 font-pregular text-gray-300">
               Please enter the confirmation code we sent to your email address.
             </Text>
             <FormField
@@ -63,11 +55,9 @@ const Confirm = () => {
               containerStyles="mt-7"
               isLoading={isSubmitting}
             />
-            <View className="flex justify-center pt-5 flex-row gap-2">
-              <Text className="text-lg text-gray-100 font-pregular">
-                Didn't receive the code?
-              </Text>
-              <Link href="#" className="text-lg font-psemibold text-secondary">
+            <View className="flex flex-row justify-center gap-2 pt-5">
+              <Text className="font-pregular text-lg text-gray-100">Didn't receive the code?</Text>
+              <Link href="/" className="font-psemibold text-lg text-secondary">
                 Resend
               </Link>
             </View>

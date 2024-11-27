@@ -1,12 +1,5 @@
-import { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  type TextInputProps,
-} from "react-native";
+import { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, type TextInputProps } from 'react-native';
 
 interface FormFieldProps extends TextInputProps {
   title: string;
@@ -28,28 +21,26 @@ const FormField = ({
 
   return (
     <View className={`space-y-2 ${otherStyles}`}>
-      <Text className="text-base text-gray-100 font-pmedium">{title}</Text>
-
-      <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 focus:border-secondary flex flex-row items-center">
+      <Text className="font-pmedium text-base text-gray-100">{title}</Text>
+      <View className="flex h-16 w-full flex-row items-center rounded-2xl border-2 border-black-200 bg-black-100 px-4 focus:border-secondary">
         <TextInput
-          className="flex-1 text-white font-psemibold text-base h-16"
+          className="h-16 flex-1 font-psemibold text-base text-white"
           value={value}
           placeholder={placeholder}
           placeholderTextColor="#7B7B8B"
           onChangeText={handleChangeText}
-          secureTextEntry={title === "Password" && !showPassword}
+          secureTextEntry={title === 'Password' && !showPassword}
           {...props}
         />
-
-        {title === "Password" && (
+        {title === 'Password' && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Image
               source={
                 !showPassword
-                  ? require("@/assets/icons/eye.png")
-                  : require("@/assets/icons/eye-hide.png")
+                  ? require('@/assets/icons/eye.png')
+                  : require('@/assets/icons/eye-hide.png')
               }
-              className="w-6 h-6"
+              className="h-6 w-6"
               resizeMode="contain"
             />
           </TouchableOpacity>

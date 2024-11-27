@@ -1,18 +1,8 @@
-import { useState } from "react";
-import { ResizeMode, Video } from "expo-av";
-import Animated, {
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from "react-native-reanimated";
-import {
-  FlatList,
-  Image,
-  ImageBackground,
-  TouchableOpacity,
-} from "react-native";
-
-import { VideoPost } from "types";
+import { ResizeMode, Video } from 'expo-av';
+import { useState } from 'react';
+import { FlatList, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import { VideoPost } from 'types';
 
 interface TrendingItemProps {
   activeItem: string;
@@ -36,37 +26,29 @@ const TrendingItem = ({ activeItem, item }: TrendingItemProps) => {
       {play ? (
         <Video
           source={{ uri: item.video }}
-          className="w-52 h-72 rounded-[33px] mt-3 bg-white/10"
+          className="mt-3 h-72 w-52 rounded-[33px] bg-white/10"
           resizeMode={ResizeMode.CONTAIN}
           useNativeControls
           shouldPlay
           onPlaybackStatusUpdate={(status) => {
-            if (
-              "isLoaded" in status &&
-              status.isLoaded &&
-              status.didJustFinish
-            ) {
+            if ('isLoaded' in status && status.isLoaded && status.didJustFinish) {
               setPlay(false);
             }
           }}
         />
       ) : (
         <TouchableOpacity
-          className="relative flex justify-center items-center"
+          className="relative flex items-center justify-center"
           activeOpacity={0.7}
-          onPress={() => setPlay(true)}
-        >
+          onPress={() => setPlay(true)}>
           <ImageBackground
-            source={{
-              uri: item.thumbnail,
-            }}
-            className="w-52 h-72 rounded-[33px] my-5 overflow-hidden shadow-lg shadow-black/40"
+            source={{ uri: item.thumbnail }}
+            className="my-5 h-72 w-52 overflow-hidden rounded-[33px] shadow-lg shadow-black/40"
             resizeMode="cover"
           />
-
           <Image
-            source={require("@/assets/icons/play.png")}
-            className="w-12 h-12 absolute"
+            source={require('@/assets/icons/play.png')}
+            className="absolute h-12 w-12"
             resizeMode="contain"
           />
         </TouchableOpacity>
@@ -75,10 +57,10 @@ const TrendingItem = ({ activeItem, item }: TrendingItemProps) => {
   );
 };
 
-const Trending = ({ posts }) => {
-  const [activeItem, setActiveItem] = useState(posts[0]);
+const Trending = ({ posts }: { posts: VideoPost[] }) => {
+  const [activeItem, setActiveItem] = useState(posts[0].id);
 
-  const viewableItemsChanged = ({ viewableItems }) => {
+  const viewableItemsChanged = ({ viewableItems }: { viewableItems: any }) => {
     if (viewableItems.length > 0) {
       setActiveItem(viewableItems[0].key);
     }
@@ -88,10 +70,8 @@ const Trending = ({ posts }) => {
     <FlatList
       data={posts}
       horizontal
-      keyExtractor={(item) => item.$id}
-      renderItem={({ item }) => (
-        <TrendingItem activeItem={activeItem} item={item} />
-      )}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => <TrendingItem activeItem={activeItem} item={item} />}
       onViewableItemsChanged={viewableItemsChanged}
       viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
       contentOffset={{ x: 170, y: 0 }}

@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { useLocalSearchParams } from "expo-router";
-import { View, Text, FlatList } from "react-native";
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect } from 'react';
+import { View, Text, FlatList } from 'react-native';
 
-import useAppwrite from "@/lib/useSupabase";
-import { searchPosts } from "@/lib/supabase";
-import EmptyState from "@/components/EmptyState";
-import SearchInput from "@/components/SearchInput";
-import VideoCard from "@/components/VideoCard";
-import Page from "@/components/Page";
+import EmptyState from '@/components/EmptyState';
+import Page from '@/components/Page';
+import SearchInput from '@/components/SearchInput';
+import VideoCard from '@/components/VideoCard';
+import { searchPosts } from '@/lib/supabase';
+import useAppwrite from '@/lib/useSupabase';
 
 const Search = () => {
   const { query } = useLocalSearchParams<{ query: string }>();
@@ -32,26 +32,16 @@ const Search = () => {
           />
         )}
         ListHeaderComponent={() => (
-          <>
-            <View className="flex my-6 px-4">
-              <Text className="font-pmedium text-gray-100 text-sm">
-                Search Results
-              </Text>
-              <Text className="text-2xl font-psemibold text-white mt-1">
-                {query}
-              </Text>
-
-              <View className="mt-6 mb-8">
-                <SearchInput initialQuery={query} refetch={refetch} />
-              </View>
+          <View className="my-6 flex px-4">
+            <Text className="font-pmedium text-sm text-gray-100">Search Results</Text>
+            <Text className="mt-1 font-psemibold text-2xl text-white">{query}</Text>
+            <View className="mb-8 mt-6">
+              <SearchInput initialQuery={query} refetch={refetch} />
             </View>
-          </>
+          </View>
         )}
         ListEmptyComponent={() => (
-          <EmptyState
-            title="No Videos Found"
-            subtitle="No videos found for this search query"
-          />
+          <EmptyState title="No Videos Found" subtitle="No videos found for this search query" />
         )}
       />
     </Page>

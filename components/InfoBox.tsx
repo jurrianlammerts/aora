@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { View, Text } from 'react-native';
 
 interface InfoBoxProps {
   title: string;
@@ -7,20 +7,11 @@ interface InfoBoxProps {
   titleStyles?: string;
 }
 
-const InfoBox = ({
-  title,
-  subtitle,
-  containerStyles,
-  titleStyles,
-}: InfoBoxProps) => {
+const InfoBox = ({ title, subtitle, containerStyles, titleStyles }: InfoBoxProps) => {
   return (
     <View className={containerStyles}>
-      <Text className={`text-white text-center font-psemibold ${titleStyles}`}>
-        {title}
-      </Text>
-      <Text className="text-sm text-gray-100 text-center font-pregular">
-        {subtitle}
-      </Text>
+      <Text className={`text-center font-psemibold text-white ${titleStyles}`}>{title}</Text>
+      <Text className="text-center font-pregular text-sm text-gray-100">{subtitle}</Text>
     </View>
   );
 };

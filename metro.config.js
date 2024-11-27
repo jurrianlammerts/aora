@@ -6,4 +6,13 @@ const { withNativeWind } = require('nativewind/metro');
 // eslint-disable-next-line no-undef
 const config = getDefaultConfig(__dirname);
 
+// Remove console.logs in production
+config.transformer.minifierConfig = {
+  ...config.transformer.minifierConfig,
+  compress: {
+    ...config.transformer.minifierConfig?.compress,
+    drop_console: true,
+  },
+};
+
 module.exports = withNativeWind(config, { input: './global.css' });
