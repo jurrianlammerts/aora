@@ -6,7 +6,7 @@ interface PageProps {
 
 const Page = ({ children }: PageProps) => {
   return (
-    <SafeAreaView className="flex flex-1 bg-primary" edges={['right', 'left', 'top']}>
+    <SafeAreaView className="flex-1 bg-primary" edges={['right', 'left', 'top']}>
       {children}
     </SafeAreaView>
   );

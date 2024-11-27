@@ -25,16 +25,15 @@ const Welcome = () => {
           />
 
           <View className="relative mt-5">
-            <Text className="text-center text-3xl font-bold text-white">
-              Discover Endless{'\n'}
-              Possibilities with <Text className="text-secondary-100">Aora</Text>
-            </Text>
-
             <Image
               source={require('@/assets/images/path.png')}
               className="absolute -bottom-2 -right-8 h-[15px] w-[136px]"
               resizeMode="contain"
             />
+            <Text className="text-center text-3xl font-bold text-white">
+              Discover Endless{'\n'}
+              Possibilities with <Text className="text-secondary-100">Aora</Text>
+            </Text>
           </View>
 
           <Text className="mt-7 text-center font-pregular text-sm text-gray-100">

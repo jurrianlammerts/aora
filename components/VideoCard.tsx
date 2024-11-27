@@ -69,7 +69,7 @@ const VideoCard = ({ id, title, creator, avatar, thumbnail, video }: VideoCardPr
             className="h-full w-full">
             <Image
               source={{ uri: thumbnail }}
-              className="h-full w-full rounded-xl"
+              className="h-full w-full rounded-xl bg-black-100"
               resizeMode="cover"
             />
             <Image
