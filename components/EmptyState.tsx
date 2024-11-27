@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { View, Text, Image } from 'react-native';
+import { View, Text } from 'react-native';
 
 import CustomButton from '@/components/CustomButton';
 
@@ -13,11 +13,6 @@ interface EmptyStateProps {
 const EmptyState = ({ title, subtitle, href, label }: EmptyStateProps) => {
   return (
     <View className="flex items-center justify-center px-4">
-      <Image
-        source={require('@/assets/images/empty.png')}
-        resizeMode="contain"
-        className="h-[216px] w-[270px]"
-      />
       <Text className="font-pmedium text-sm text-gray-100">{title}</Text>
       <Text className="mt-2 text-center font-psemibold text-xl text-white">{subtitle}</Text>
       <CustomButton

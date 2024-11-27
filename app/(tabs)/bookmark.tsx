@@ -2,11 +2,10 @@ import { useState } from 'react';
 import { FlatList, RefreshControl, Text } from 'react-native';
 
 import Page from '@/components/Page';
-import { getBookmarkPosts } from '@/lib/supabase';
-import useSupabase from '@/lib/useSupabase';
+import useBookmarkPosts from '@/hooks/use-bookmark-posts';
 
 const Bookmark = () => {
-  const { data: posts, refetch } = useSupabase(getBookmarkPosts);
+  const { data: posts, refetch } = useBookmarkPosts();
 
   const [refreshing, setRefreshing] = useState(false);
 

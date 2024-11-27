@@ -1,12 +1,14 @@
-import { ResizeMode, Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { View, Text, Alert, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { Upload } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { View, Text, Alert, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 
 import CustomButton from '@/components/CustomButton';
-import FormField from '@/components/FormField';
+import InputField from '@/components/InputField';
 import Page from '@/components/Page';
+import { SECONDARY_COLOR_100 } from '@/constants';
 import { createVideoPost } from '@/lib/supabase';
 import useAuthStore from '@/store/auth';
 
@@ -24,9 +26,14 @@ const Create = () => {
     videoAsset: null,
     prompt: '',
   });
+  const player = useVideoPlayer(form.videoAsset?.uri ?? '', (player) => {
+    player.loop = true;
+    player.play();
+  });
 
   const openPicker = async (selectType: 'image' | 'video') => {
     const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images', 'videos'],
       base64: true,
       allowsEditing: true,
       quality: 1,
@@ -46,10 +53,6 @@ const Create = () => {
           videoAsset: result.assets[0],
         });
       }
-    } else {
-      setTimeout(() => {
-        Alert.alert('Document picked', JSON.stringify(result, null, 2));
-      }, 100);
     }
   };
 
@@ -63,8 +66,11 @@ const Create = () => {
       if (!session?.user.id || !form.thumbnailAsset || !form.videoAsset) return;
 
       await createVideoPost({
-        ...form,
-        userId: session?.user.id,
+        title: form.title,
+        thumbnailAsset: form.thumbnailAsset,
+        videoAsset: form.videoAsset,
+        prompt: form.prompt,
+        userId: session.user.id,
       });
 
       Alert.alert('Success', 'Post uploaded successfully');
@@ -87,44 +93,29 @@ const Create = () => {
     <Page>
       <ScrollView className="px-4 pt-6" contentContainerStyle={{ paddingBottom: 48 }}>
         <Text className="font-psemibold text-2xl text-white">Upload Video</Text>
-        <FormField
+        <InputField
           title="Video Title"
           value={form.title}
           placeholder="Give your video a catchy title..."
           handleChangeText={(e) => setForm({ ...form, title: e })}
           otherStyles="mt-10"
         />
-
         <View className="mt-7 space-y-2">
           <Text className="font-pmedium text-base text-gray-100">Upload Video</Text>
-
           <TouchableOpacity onPress={() => openPicker('video')}>
             {form.videoAsset ? (
-              <Video
-                source={{ uri: form.videoAsset.uri }}
-                className="h-64 w-full rounded-2xl"
-                useNativeControls
-                resizeMode={ResizeMode.COVER}
-                isLooping
-              />
+              <VideoView player={player} nativeControls contentFit="cover" style={styles.video} />
             ) : (
               <View className="flex h-40 w-full items-center justify-center rounded-2xl border border-black-200 bg-black-100 px-4">
                 <View className="flex h-14 w-14 items-center justify-center border border-dashed border-secondary-100">
-                  <Image
-                    source={require('@/assets/icons/upload.png')}
-                    resizeMode="contain"
-                    alt="upload"
-                    className="h-1/2 w-1/2"
-                  />
+                  <Upload size={24} color={SECONDARY_COLOR_100} />
                 </View>
               </View>
             )}
           </TouchableOpacity>
         </View>
-
         <View className="mt-7 space-y-2">
           <Text className="font-pmedium text-base text-gray-100">Thumbnail Image</Text>
-
           <TouchableOpacity onPress={() => openPicker('image')}>
             {form.thumbnailAsset ? (
               <Image
@@ -133,27 +124,20 @@ const Create = () => {
                 className="h-64 w-full rounded-2xl"
               />
             ) : (
-              <View className="flex h-16 w-full flex-row items-center justify-center space-x-2 rounded-2xl border-2 border-black-200 bg-black-100 px-4">
-                <Image
-                  source={require('@/assets/icons/upload.png')}
-                  resizeMode="contain"
-                  alt="upload"
-                  className="h-5 w-5"
-                />
+              <View className="flex h-16 w-full flex-row items-center justify-center gap-2 space-x-2 rounded-2xl border-2 border-black-200 bg-black-100 px-4">
+                <Upload size={16} color={SECONDARY_COLOR_100} />
                 <Text className="font-pmedium text-sm text-gray-100">Choose a file</Text>
               </View>
             )}
           </TouchableOpacity>
         </View>
-
-        <FormField
+        <InputField
           title="AI Prompt"
           value={form.prompt}
           placeholder="The AI prompt of your video...."
           handleChangeText={(e) => setForm({ ...form, prompt: e })}
           otherStyles="mt-7"
         />
-
         <CustomButton
           title="Submit & Publish"
           handlePress={submit}
@@ -166,3 +150,12 @@ const Create = () => {
 };
 
 export default Create;
+
+const styles = StyleSheet.create({
+  video: {
+    height: 256,
+    width: '100%',
+    borderRadius: 24,
+    overflow: 'hidden',
+  },
+});

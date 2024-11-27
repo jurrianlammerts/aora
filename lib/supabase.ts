@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Buffer } from 'buffer';
 import * as Crypto from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
-import { UserType } from 'types';
+import { UserType, VideoPost } from 'types';
 
 global.Buffer = global.Buffer || Buffer;
 
@@ -46,7 +46,8 @@ export async function signUp(
         username,
         avatar: `https://ui-avatars.com/api/?name=${username}&background=random`,
       })
-      .select();
+      .select()
+      .returns<UserType[]>();
 
     if (profileError) throw profileError;
 
@@ -87,7 +88,7 @@ export async function getAccount() {
 }
 
 // Get Current User
-export async function getCurrentUser() {
+export async function getCurrentUser(): Promise<UserType | null> {
   try {
     const {
       data: { user },
@@ -95,7 +96,12 @@ export async function getCurrentUser() {
 
     if (!user) throw new Error('No current user');
 
-    const { data, error } = await supabase.from('users').select('*').eq('id', user.id).single();
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .returns<UserType>()
+      .single();
 
     if (error) throw error;
 
@@ -107,7 +113,7 @@ export async function getCurrentUser() {
 }
 
 // Sign Out
-export async function signOut() {
+export async function signOut(): Promise<void> {
   try {
     const { error } = await supabase.auth.signOut();
 
@@ -118,7 +124,10 @@ export async function signOut() {
 }
 
 // Upload File
-export async function uploadFile(file: ImagePicker.ImagePickerAsset, type: 'image' | 'video') {
+export async function uploadFile(
+  file: ImagePicker.ImagePickerAsset,
+  type: 'image' | 'video'
+): Promise<string | undefined> {
   if (!file.uri) {
     console.log('[uploadFile] No URI found in file');
     return;
@@ -161,7 +170,7 @@ export async function createVideoPost(form: {
   videoAsset: ImagePicker.ImagePickerAsset;
   prompt: string;
   userId?: string;
-}) {
+}): Promise<VideoPost> {
   try {
     const [thumbnailUrl, videoUrl] = await Promise.all([
       uploadFile(form.thumbnailAsset, 'image'),
@@ -180,7 +189,8 @@ export async function createVideoPost(form: {
         prompt: form.prompt,
         creator: form.userId,
       })
-      .select();
+      .select()
+      .returns<VideoPost[]>();
 
     console.log({ error });
 
@@ -193,9 +203,12 @@ export async function createVideoPost(form: {
 }
 
 // Get all video Posts
-export async function getAllPosts() {
+export async function getAllPosts(): Promise<VideoPost[]> {
   try {
-    const { data, error } = await supabase.from('video_posts').select('*');
+    const { data, error } = await supabase
+      .from('video_posts')
+      .select('*, creator(*)')
+      .returns<VideoPost[]>();
 
     if (error) throw error;
 
@@ -206,9 +219,13 @@ export async function getAllPosts() {
 }
 
 // Get video posts created by user
-export async function getUserPosts(userId: string) {
+export async function getUserPosts(userId: string): Promise<VideoPost[]> {
   try {
-    const { data, error } = await supabase.from('video_posts').select('*').eq('creator', userId);
+    const { data, error } = await supabase
+      .from('video_posts')
+      .select('*, creator(*)')
+      .eq('creator', userId)
+      .returns<VideoPost[]>();
 
     if (error) throw error;
 
@@ -219,12 +236,13 @@ export async function getUserPosts(userId: string) {
 }
 
 // Search video posts
-export async function searchPosts(query: string) {
+export async function searchPosts(query: string): Promise<VideoPost[]> {
   try {
     const { data, error } = await supabase
       .from('video_posts')
-      .select('*')
-      .ilike('title', `%${query}%`);
+      .select('*, creator(*)')
+      .ilike('title', `%${query}%`)
+      .returns<VideoPost[]>();
 
     if (error) throw error;
 
@@ -235,13 +253,14 @@ export async function searchPosts(query: string) {
 }
 
 // Get latest created video posts
-export async function getLatestPosts() {
+export async function getLatestPosts(): Promise<VideoPost[]> {
   try {
     const { data, error } = await supabase
       .from('video_posts')
-      .select('*')
+      .select('*, creator(*)')
       .order('created_at', { ascending: false })
-      .limit(7);
+      .limit(7)
+      .returns<VideoPost[]>();
 
     if (error) throw error;
 
@@ -252,12 +271,13 @@ export async function getLatestPosts() {
 }
 
 // Get bookmark posts
-export async function getBookmarkPosts(userId: string) {
+export async function getBookmarkPosts(userId: string): Promise<VideoPost[]> {
   try {
     const { data, error } = await supabase
       .from('user_bookmarks')
       .select('post(*)')
-      .eq('user', userId);
+      .eq('user', userId)
+      .returns<{ post: VideoPost }[]>();
 
     if (error) throw error;
 
@@ -273,10 +293,7 @@ export async function bookmarkPost(postId: string, userId: string) {
   try {
     const { data, error } = await supabase
       .from('user_bookmarks')
-      .insert({
-        post: postId,
-        user: userId,
-      })
+      .insert({ post: postId, user: userId })
       .select();
 
     if (error) throw error;

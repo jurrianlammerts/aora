@@ -6,12 +6,11 @@ import EmptyState from '@/components/EmptyState';
 import Page from '@/components/Page';
 import SearchInput from '@/components/SearchInput';
 import VideoCard from '@/components/VideoCard';
-import { searchPosts } from '@/lib/supabase';
-import useAppwrite from '@/lib/useSupabase';
+import { useSearchPosts } from '@/hooks/use-search-posts';
 
 const Search = () => {
   const { query } = useLocalSearchParams<{ query: string }>();
-  const { data: posts, refetch } = useAppwrite(() => searchPosts(query));
+  const { data: posts, refetch } = useSearchPosts(query);
 
   useEffect(() => {
     refetch();
@@ -21,7 +20,7 @@ const Search = () => {
     <Page>
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.$id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <VideoCard
             title={item.title}

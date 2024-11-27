@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { View, Text, ScrollView, Dimensions, Alert, KeyboardAvoidingView } from 'react-native';
 
 import CustomButton from '@/components/CustomButton';
-import FormField from '@/components/FormField';
+import InputField from '@/components/InputField';
 import Page from '@/components/Page';
 
 const Confirm = () => {
@@ -42,7 +42,7 @@ const Confirm = () => {
             <Text className="mt-4 font-pregular text-gray-300">
               Please enter the confirmation code we sent to your email address.
             </Text>
-            <FormField
+            <InputField
               title="Confirmation Code"
               value={code}
               handleChangeText={(e) => setCode(e)}

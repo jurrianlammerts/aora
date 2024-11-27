@@ -1,6 +1,7 @@
-import { ResizeMode, Video } from 'expo-av';
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { useEvent } from 'expo';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 interface VideoCardProps {
   title: string;
@@ -11,7 +12,8 @@ interface VideoCardProps {
 }
 
 const VideoCard = ({ title, creator, avatar, thumbnail, video }: VideoCardProps) => {
-  const [play, setPlay] = useState(false);
+  const player = useVideoPlayer(video);
+  const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
   return (
     <View className="mb-14 flex flex-col items-center px-4">
@@ -41,38 +43,40 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video }: VideoCardProps)
           />
         </View>
       </View>
-      {play ? (
-        <Video
-          source={{ uri: video }}
-          className="mt-3 h-60 w-full rounded-xl"
-          resizeMode={ResizeMode.CONTAIN}
-          useNativeControls
-          shouldPlay
-          onPlaybackStatusUpdate={(status) => {
-            if ('didJustFinish' in status && status.didJustFinish) {
-              setPlay(false);
-            }
-          }}
-        />
-      ) : (
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={() => setPlay(true)}
-          className="relative mt-3 flex h-60 w-full items-center justify-center rounded-xl">
-          <Image
-            source={{ uri: thumbnail }}
-            className="mt-3 h-full w-full rounded-xl"
-            resizeMode="cover"
-          />
-          <Image
-            source={require('@/assets/icons/play.png')}
-            className="absolute h-12 w-12"
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      )}
+      <View className="relative mt-3 h-60 w-full">
+        {isPlaying ? (
+          <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(300)}>
+            <VideoView player={player} contentFit="cover" style={styles.video} />
+          </Animated.View>
+        ) : (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => player.play()}
+            className="h-full w-full">
+            <Image
+              source={{ uri: thumbnail }}
+              className="h-full w-full rounded-xl"
+              resizeMode="cover"
+            />
+            <Image
+              source={require('@/assets/icons/play.png')}
+              className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2"
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
 
 export default VideoCard;
+
+const styles = StyleSheet.create({
+  video: {
+    height: '100%',
+    width: '100%',
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+});

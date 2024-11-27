@@ -1,6 +1,6 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 
-import { PRIMARY_COLOR } from './constants';
+const PRIMARY_COLOR = '#161622';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   return {
@@ -13,7 +13,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     userInterfaceStyle: 'dark',
     backgroundColor: PRIMARY_COLOR,
     splash: {
-      image: './assets/splash.png',
+      image: './assets/icon.png',
       resizeMode: 'contain',
       backgroundColor: PRIMARY_COLOR,
     },
@@ -24,7 +24,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: './assets/adaptive-icon.png',
+        foregroundImage: './assets/icon.png',
         backgroundColor: PRIMARY_COLOR,
       },
     },
@@ -39,6 +39,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     plugins: [
       'expo-router',
       'expo-font',
+      ['expo-video', { supportsPictureInPicture: true }],
       [
         'expo-image-picker',
         {

@@ -27,7 +27,7 @@ const Welcome = () => {
           <View className="relative mt-5">
             <Text className="text-center text-3xl font-bold text-white">
               Discover Endless{'\n'}
-              Possibilities with <Text className="text-secondary-200">Aora</Text>
+              Possibilities with <Text className="text-secondary-100">Aora</Text>
             </Text>
 
             <Image

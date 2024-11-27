@@ -4,10 +4,10 @@ interface LoaderProps {
   isLoading: boolean;
 }
 
-const Loader = ({ isLoading }: LoaderProps) => {
-  const osName = Platform.OS;
-  const screenHeight = Dimensions.get('screen').height;
+const osName = Platform.OS;
+const screenHeight = Dimensions.get('screen').height;
 
+const Loader = ({ isLoading }: LoaderProps) => {
   if (!isLoading) return null;
 
   return (

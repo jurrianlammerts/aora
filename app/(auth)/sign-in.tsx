@@ -4,7 +4,7 @@ import { View, Text, ScrollView, Dimensions, Alert, KeyboardAvoidingView } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import CustomButton from '@/components/CustomButton';
-import FormField from '@/components/FormField';
+import InputField from '@/components/InputField';
 import { getCurrentUser, signIn } from '@/lib/supabase';
 import useAuthStore from '@/store/auth';
 
@@ -46,14 +46,14 @@ const SignIn = () => {
             <Text className="mt-10 font-psemibold text-2xl font-semibold text-white">
               Log in to Aora
             </Text>
-            <FormField
+            <InputField
               title="Email"
               value={form.email}
               handleChangeText={(e) => setForm({ ...form, email: e })}
               otherStyles="mt-7"
               keyboardType="email-address"
             />
-            <FormField
+            <InputField
               title="Password"
               value={form.password}
               handleChangeText={(e) => setForm({ ...form, password: e })}

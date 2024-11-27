@@ -2,6 +2,8 @@ import { router, usePathname } from 'expo-router';
 import { useState } from 'react';
 import { View, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
 
+import { GRAY_COLOR } from '@/constants';
+
 interface SearchInputProps {
   initialQuery?: string;
   refetch?: () => void;
@@ -17,7 +19,7 @@ const SearchInput = ({ initialQuery, refetch }: SearchInputProps) => {
         className="mt-0.5 h-16 flex-1 font-pregular text-base text-white"
         value={query}
         placeholder="Search a video topic"
-        placeholderTextColor="#CDCDE0"
+        placeholderTextColor={GRAY_COLOR}
         onChangeText={(e) => setQuery(e)}
       />
       <TouchableOpacity

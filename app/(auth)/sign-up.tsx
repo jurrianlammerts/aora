@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { View, Text, ScrollView, Dimensions, Alert, KeyboardAvoidingView } from 'react-native';
 
 import CustomButton from '@/components/CustomButton';
-import FormField from '@/components/FormField';
+import InputField from '@/components/InputField';
 import Page from '@/components/Page';
 import useAuthStore from '@/store/auth';
 
@@ -48,20 +48,20 @@ const SignUp = () => {
             <Text className="mt-10 font-psemibold text-2xl font-semibold text-white">
               Sign Up to Aora
             </Text>
-            <FormField
+            <InputField
               title="Username"
               value={form.username}
               handleChangeText={(e) => setForm({ ...form, username: e })}
               otherStyles="mt-10"
             />
-            <FormField
+            <InputField
               title="Email"
               value={form.email}
               handleChangeText={(e) => setForm({ ...form, email: e })}
               otherStyles="mt-7"
               keyboardType="email-address"
             />
-            <FormField
+            <InputField
               title="Password"
               value={form.password}
               handleChangeText={(e) => setForm({ ...form, password: e })}

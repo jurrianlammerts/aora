@@ -1,16 +1,31 @@
-import { ResizeMode, Video } from 'expo-av';
-import { useState } from 'react';
-import { FlatList, Image, ImageBackground, TouchableOpacity } from 'react-native';
-import Animated, { useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated';
+import { useEvent } from 'expo';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useCallback, useState } from 'react';
+import { StyleSheet, FlatList, Image, ImageBackground, TouchableOpacity } from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+  FadeOut,
+  FadeIn,
+} from 'react-native-reanimated';
 import { VideoPost } from 'types';
 
 interface TrendingItemProps {
-  activeItem: string;
+  activeItem: string | null;
   item: VideoPost;
 }
 
 const TrendingItem = ({ activeItem, item }: TrendingItemProps) => {
-  const [play, setPlay] = useState(false);
+  const player = useVideoPlayer(item.video, (player) => {
+    if (activeItem === item.id) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  });
+
+  const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
 
   const animatedStyle = useAnimatedStyle(() => {
     const scale = withTiming(activeItem === item.id ? 1 : 0.9, {
@@ -23,27 +38,24 @@ const TrendingItem = ({ activeItem, item }: TrendingItemProps) => {
 
   return (
     <Animated.View className="mr-5" style={animatedStyle}>
-      {play ? (
-        <Video
-          source={{ uri: item.video }}
-          className="mt-3 h-72 w-52 rounded-[33px] bg-white/10"
-          resizeMode={ResizeMode.CONTAIN}
-          useNativeControls
-          shouldPlay
-          onPlaybackStatusUpdate={(status) => {
-            if ('isLoaded' in status && status.isLoaded && status.didJustFinish) {
-              setPlay(false);
-            }
-          }}
-        />
+      {isPlaying ? (
+        <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(300)}>
+          <VideoView
+            player={player}
+            style={styles.video}
+            contentFit="cover"
+            nativeControls={false}
+          />
+        </Animated.View>
       ) : (
         <TouchableOpacity
           className="relative flex items-center justify-center"
           activeOpacity={0.7}
-          onPress={() => setPlay(true)}>
+          onPress={() => player.play()}>
           <ImageBackground
             source={{ uri: item.thumbnail }}
-            className="my-5 h-72 w-52 overflow-hidden rounded-[33px] shadow-lg shadow-black/40"
+            className="my-5 overflow-hidden rounded-[33px] shadow-lg shadow-black/40"
+            style={styles.image}
             resizeMode="cover"
           />
           <Image
@@ -58,13 +70,16 @@ const TrendingItem = ({ activeItem, item }: TrendingItemProps) => {
 };
 
 const Trending = ({ posts }: { posts: VideoPost[] }) => {
-  const [activeItem, setActiveItem] = useState(posts[0].id);
+  const [activeItem, setActiveItem] = useState<string | null>(posts[0]?.id);
 
-  const viewableItemsChanged = ({ viewableItems }: { viewableItems: any }) => {
-    if (viewableItems.length > 0) {
-      setActiveItem(viewableItems[0].key);
-    }
-  };
+  const viewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: { item: VideoPost }[] }) => {
+      if (viewableItems.length > 0) {
+        setActiveItem(viewableItems[0].item.id);
+      }
+    },
+    []
+  );
 
   return (
     <FlatList
@@ -80,3 +95,20 @@ const Trending = ({ posts }: { posts: VideoPost[] }) => {
 };
 
 export default Trending;
+
+const styles = StyleSheet.create({
+  video: {
+    marginTop: 17,
+    height: 250,
+    width: 180,
+    flex: 1,
+    borderRadius: 33,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginBottom: 18,
+    overflow: 'hidden',
+  },
+  image: {
+    height: 250,
+    width: 180,
+  },
+});

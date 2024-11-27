@@ -10,4 +10,5 @@ export type VideoPost = {
   title: string;
   video: string;
   thumbnail: string;
+  creator: UserType;
 };

@@ -1,8 +1,9 @@
 import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 
+import { PRIMARY_COLOR } from '@/constants';
+
 interface CustomButtonProps {
   title: string;
-  href?: string;
   handlePress?: () => void;
   containerStyles?: string;
   textStyles?: string;
@@ -11,7 +12,6 @@ interface CustomButtonProps {
 
 const CustomButton = ({
   title,
-  href,
   handlePress,
   containerStyles,
   textStyles,
@@ -27,7 +27,12 @@ const CustomButton = ({
       disabled={isLoading}>
       <Text className={`font-psemibold text-lg text-primary ${textStyles}`}>{title}</Text>
       {isLoading && (
-        <ActivityIndicator animating={isLoading} color="#fff" size="small" className="ml-2" />
+        <ActivityIndicator
+          animating={isLoading}
+          color={PRIMARY_COLOR}
+          size="small"
+          className="ml-2"
+        />
       )}
     </TouchableOpacity>
   );

@@ -6,14 +6,14 @@ import Page from '@/components/Page';
 import SearchInput from '@/components/SearchInput';
 import Trending from '@/components/Trending';
 import VideoCard from '@/components/VideoCard';
-import { getAllPosts, getLatestPosts } from '@/lib/supabase';
-import useSupabase from '@/lib/useSupabase';
+import { useGetAllPosts } from '@/hooks/use-get-all-posts';
+import { useGetLatestPosts } from '@/hooks/use-get-latest-posts';
 import useAuthStore from '@/store/auth';
 
 const Home = () => {
   const { user } = useAuthStore();
-  const { data: posts, refetch } = useSupabase(getAllPosts);
-  const { data: latestPosts } = useSupabase(getLatestPosts);
+  const { data: posts, refetch } = useGetAllPosts();
+  const { data: latestPosts } = useGetLatestPosts();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {

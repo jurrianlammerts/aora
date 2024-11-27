@@ -4,13 +4,12 @@ import EmptyState from '@/components/EmptyState';
 import InfoBox from '@/components/InfoBox';
 import Page from '@/components/Page';
 import VideoCard from '@/components/VideoCard';
-import { getUserPosts } from '@/lib/supabase';
-import useSupabase from '@/lib/useSupabase';
+import { useGetUserPosts } from '@/hooks/use-get-user-posts';
 import useAuthStore from '@/store/auth';
 
 const Profile = () => {
   const { user, signOut } = useAuthStore();
-  const { data: posts } = useSupabase(() => getUserPosts(user?.id));
+  const { data: posts } = useGetUserPosts(user?.id);
 
   const logout = async () => {
     await signOut();
@@ -19,8 +18,8 @@ const Profile = () => {
   return (
     <Page>
       <FlatList
-        data={posts}
-        keyExtractor={(item) => item.$id}
+        data={posts || []}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <VideoCard
             title={item.title}
@@ -54,10 +53,10 @@ const Profile = () => {
                 resizeMode="cover"
               />
             </View>
-            <InfoBox title={user?.username} containerStyles="mt-5" titleStyles="text-lg" />
+            <InfoBox title={user?.username || ''} containerStyles="mt-5" titleStyles="text-lg" />
             <View className="mt-5 flex flex-row">
               <InfoBox
-                title={posts.length || 0}
+                title={posts?.length?.toString() || ''}
                 subtitle="Posts"
                 titleStyles="text-xl"
                 containerStyles="mr-10"
