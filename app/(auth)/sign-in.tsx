@@ -12,8 +12,8 @@ const SignIn = () => {
   const { setUser } = useAuthStore();
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
-    email: '',
-    password: '',
+    email: 'jurrian@lammerts.net',
+    password: 'Test#123',
   });
 
   const submit = async () => {

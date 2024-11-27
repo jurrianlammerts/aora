@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import useAuthStore from '@/store/auth';
 
 export default function useAuth() {
-  const { setSession, setLoggedIn, getUser, setLoading } = useAuthStore();
+  const { setSession, setLoggedIn, getUser, setUser, setLoading } = useAuthStore();
 
   useEffect(() => {
     // Handle initial session check
@@ -16,6 +16,12 @@ export default function useAuth() {
         } = await supabase.auth.getSession();
         setSession(session);
         await updateAuthState(session);
+
+        // if no session, clear the user
+        if (!session) {
+          setUser(null);
+          setLoggedIn(false);
+        }
       } catch (error) {
         console.error('Error checking session:', error);
         setLoading(false);

@@ -20,15 +20,16 @@ interface AuthState {
 }
 
 const useAuthStore = create<AuthState>((set) => ({
-  loading: true,
+  loading: false,
   session: null,
   isLoggedIn: false,
   user: null,
   setLoading: (loading) => set({ loading }),
   setUser: (user) => set({ user }),
   getUser: async () => {
+    set({ loading: true });
     const user = await getCurrentUser();
-    set({ user });
+    set({ loading: false, user });
     return user;
   },
   setLoggedIn: (isLoggedIn) => set({ isLoggedIn }),

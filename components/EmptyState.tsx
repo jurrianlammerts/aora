@@ -17,7 +17,7 @@ const EmptyState = ({ title, subtitle, href, label }: EmptyStateProps) => {
       <Text className="mt-2 text-center font-psemibold text-xl text-white">{subtitle}</Text>
       <CustomButton
         title={label || 'Back to Explore'}
-        handlePress={() => router.navigate(href || '/home')}
+        handlePress={() => (href ? router.navigate(href) : router.dismissTo('/home'))}
         containerStyles="w-full my-5"
       />
     </View>

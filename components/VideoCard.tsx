@@ -3,7 +3,12 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
+import { GRAY_COLOR, SECONDARY_COLOR_100 } from '@/constants';
+import { useBookmarkPost } from '@/hooks/use-bookmark-post';
+import { useGetBookmarkPosts } from '@/hooks/use-get-bookmark-posts';
+
 interface VideoCardProps {
+  id: string;
   title: string;
   creator: string;
   avatar: string;
@@ -11,9 +16,13 @@ interface VideoCardProps {
   video: string;
 }
 
-const VideoCard = ({ title, creator, avatar, thumbnail, video }: VideoCardProps) => {
+const VideoCard = ({ id, title, creator, avatar, thumbnail, video }: VideoCardProps) => {
   const player = useVideoPlayer(video);
+  const { mutate: bookmarkPost } = useBookmarkPost(id);
+  const { data: bookmarkPosts } = useGetBookmarkPosts();
   const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
+
+  const isBookmarked = bookmarkPosts?.some((bookmark) => bookmark.id === id);
 
   return (
     <View className="mb-14 flex flex-col items-center px-4">
@@ -35,13 +44,18 @@ const VideoCard = ({ title, creator, avatar, thumbnail, video }: VideoCardProps)
             </Text>
           </View>
         </View>
-        <View className="pt-2">
+        <TouchableOpacity
+          className="pt-2"
+          onPress={() => bookmarkPost()}
+          activeOpacity={0.7}
+          hitSlop={12}>
           <Image
-            source={require('@/assets/icons/menu.png')}
+            source={require('@/assets/icons/bookmark.png')}
             className="h-5 w-5"
             resizeMode="contain"
+            tintColor={isBookmarked ? SECONDARY_COLOR_100 : GRAY_COLOR}
           />
-        </View>
+        </TouchableOpacity>
       </View>
       <View className="relative mt-3 h-60 w-full">
         {isPlaying ? (

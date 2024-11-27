@@ -1,31 +1,25 @@
 import * as ImagePicker from 'expo-image-picker';
-import { router } from 'expo-router';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { Upload } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { View, Text, Alert, Image, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { VideoPostForm } from 'types';
 
 import CustomButton from '@/components/CustomButton';
 import InputField from '@/components/InputField';
 import Page from '@/components/Page';
 import { SECONDARY_COLOR_100 } from '@/constants';
+import useCreateVideoPost from '@/hooks/use-create-video-post';
 import { createVideoPost } from '@/lib/supabase';
-import useAuthStore from '@/store/auth';
 
 const Create = () => {
-  const { session } = useAuthStore();
-  const [uploading, setUploading] = useState(false);
-  const [form, setForm] = useState<{
-    title: string;
-    thumbnailAsset: ImagePicker.ImagePickerAsset | null;
-    videoAsset: ImagePicker.ImagePickerAsset | null;
-    prompt: string;
-  }>({
+  const [form, setForm] = useState<VideoPostForm>({
     title: '',
     thumbnailAsset: null,
     videoAsset: null,
     prompt: '',
   });
+  const { mutate: createVideoPost, isPending } = useCreateVideoPost(form);
   const player = useVideoPlayer(form.videoAsset?.uri ?? '', (player) => {
     player.loop = true;
     player.play();
@@ -56,37 +50,21 @@ const Create = () => {
     }
   };
 
-  const submit = async () => {
-    if (form.prompt === '' || form.title === '' || !form.thumbnailAsset || !form.videoAsset) {
-      return Alert.alert('Please provide all fields');
+  const submit = () => {
+    if (form.prompt === '' || form.title === '') {
+      return Alert.alert('Please provide title and prompt');
     }
 
-    setUploading(true);
-    try {
-      if (!session?.user.id || !form.thumbnailAsset || !form.videoAsset) return;
-
-      await createVideoPost({
-        title: form.title,
-        thumbnailAsset: form.thumbnailAsset,
-        videoAsset: form.videoAsset,
-        prompt: form.prompt,
-        userId: session.user.id,
-      });
-
-      Alert.alert('Success', 'Post uploaded successfully');
-      router.replace('/(tabs)/home');
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setForm({
-        title: '',
-        videoAsset: null,
-        thumbnailAsset: null,
-        prompt: '',
-      });
-
-      setUploading(false);
+    if (!form.thumbnailAsset || !form.videoAsset) {
+      return Alert.alert('Please upload both video and thumbnail');
     }
+
+    createVideoPost({
+      title: form.title,
+      thumbnailAsset: form.thumbnailAsset,
+      videoAsset: form.videoAsset,
+      prompt: form.prompt,
+    });
   };
 
   return (
@@ -142,7 +120,7 @@ const Create = () => {
           title="Submit & Publish"
           handlePress={submit}
           containerStyles="mt-7"
-          isLoading={uploading}
+          isLoading={isPending}
         />
       </ScrollView>
     </Page>

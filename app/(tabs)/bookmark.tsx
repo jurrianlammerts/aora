@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { FlatList, RefreshControl, Text } from 'react-native';
+import { FlatList, RefreshControl, Text, View } from 'react-native';
 
+import EmptyState from '@/components/EmptyState';
 import Page from '@/components/Page';
-import useBookmarkPosts from '@/hooks/use-bookmark-posts';
+import VideoCard from '@/components/VideoCard';
+import { useGetBookmarkPosts } from '@/hooks/use-get-bookmark-posts';
 
 const Bookmark = () => {
-  const { data: posts, refetch } = useBookmarkPosts();
-
+  const { data: posts, refetch } = useGetBookmarkPosts();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -18,15 +19,30 @@ const Bookmark = () => {
   return (
     <Page>
       <FlatList
-        className="my-6 px-4"
+        className="my-6"
         ListHeaderComponent={() => (
-          <Text className="font-psemibold text-2xl text-white">Bookmarks</Text>
+          <Text className=" mb-4 px-4 font-psemibold text-2xl text-white">Bookmarks</Text>
         )}
         ListEmptyComponent={() => (
-          <Text className="font-pregular text-lg text-gray-100">No bookmarks found</Text>
+          <View className="h-screen flex-1 justify-center px-4 pb-60">
+            <EmptyState
+              title="No Bookmarks Found"
+              subtitle="No videos bookmarked yet"
+              href="/home"
+            />
+          </View>
         )}
         data={posts}
-        renderItem={({ item }) => <Text>{item.title}</Text>}
+        renderItem={({ item }) => (
+          <VideoCard
+            id={item.id}
+            title={item.title}
+            creator={item.creator.username}
+            avatar={item.creator.avatar}
+            thumbnail={item.thumbnail}
+            video={item.video}
+          />
+        )}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
     </Page>

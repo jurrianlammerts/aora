@@ -11,16 +11,22 @@ interface SearchInputProps {
 
 const SearchInput = ({ initialQuery, refetch }: SearchInputProps) => {
   const pathname = usePathname();
+  const [isFocused, setIsFocused] = useState(false);
   const [query, setQuery] = useState(initialQuery || '');
 
   return (
-    <View className="flex h-16 w-full flex-row items-center space-x-4 rounded-2xl border-2 border-black-200 bg-black-100 px-4 focus:border-secondary">
+    <View
+      className={`flex h-16 w-full flex-row items-center space-x-4 rounded-2xl border-2 ${
+        isFocused ? 'border-secondary' : 'border-black-200'
+      } bg-black-100 px-4`}>
       <TextInput
         className="mt-0.5 h-16 flex-1 font-pregular text-base text-white"
         value={query}
         placeholder="Search a video topic"
         placeholderTextColor={GRAY_COLOR}
         onChangeText={(e) => setQuery(e)}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
       />
       <TouchableOpacity
         onPress={() => {

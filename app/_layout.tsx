@@ -1,5 +1,5 @@
 import '../global.css';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -9,18 +9,17 @@ import { AppState } from 'react-native';
 import 'react-native-url-polyfill/auto';
 
 import { PRIMARY_COLOR } from '@/constants';
+import { queryClient } from '@/lib/react-query';
 import { supabase } from '@/lib/supabase';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 // Set the animation options. This is optional.
-SplashScreen.setOptions({
-  duration: 1000,
-  fade: true,
-});
-
-const queryClient = new QueryClient();
+// SplashScreen.setOptions({
+//   duration: 1000,
+//   fade: true,
+// });
 
 // Tells Supabase Auth to continuously refresh the session automatically if
 // the app is in the foreground. When this is added, you will continue to receive

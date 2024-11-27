@@ -22,6 +22,7 @@ const Profile = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <VideoCard
+            id={item.id}
             title={item.title}
             thumbnail={item.thumbnail}
             video={item.video}

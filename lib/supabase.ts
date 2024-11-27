@@ -1,9 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { Buffer } from 'buffer';
-import * as Crypto from 'expo-crypto';
 import * as ImagePicker from 'expo-image-picker';
-import { UserType, VideoPost } from 'types';
+import { BookmarkPost, UserType, VideoPost, VideoPostForm } from 'types';
 
 global.Buffer = global.Buffer || Buffer;
 
@@ -129,8 +128,7 @@ export async function uploadFile(
   type: 'image' | 'video'
 ): Promise<string | undefined> {
   if (!file.uri) {
-    console.log('[uploadFile] No URI found in file');
-    return;
+    throw new Error('The file that you are trying to upload is not valid');
   }
 
   try {
@@ -164,25 +162,20 @@ export async function uploadFile(
 }
 
 // Create Video Post
-export async function createVideoPost(form: {
-  title: string;
-  thumbnailAsset: ImagePicker.ImagePickerAsset;
-  videoAsset: ImagePicker.ImagePickerAsset;
-  prompt: string;
-  userId?: string;
-}): Promise<VideoPost> {
+export async function createVideoPost(form: VideoPostForm) {
+  if (!form.thumbnailAsset || !form.videoAsset) {
+    throw new Error('Thumbnail or video asset is missing');
+  }
+
   try {
     const [thumbnailUrl, videoUrl] = await Promise.all([
       uploadFile(form.thumbnailAsset, 'image'),
       uploadFile(form.videoAsset, 'video'),
     ]);
 
-    const UUID = Crypto.randomUUID();
-
     const { data, error } = await supabase
       .from('video_posts')
       .insert({
-        id: UUID,
         title: form.title,
         thumbnail: thumbnailUrl,
         video: videoUrl,
@@ -191,8 +184,6 @@ export async function createVideoPost(form: {
       })
       .select()
       .returns<VideoPost[]>();
-
-    console.log({ error });
 
     if (error) throw error;
 
@@ -203,7 +194,7 @@ export async function createVideoPost(form: {
 }
 
 // Get all video Posts
-export async function getAllPosts(): Promise<VideoPost[]> {
+export async function getAllPosts() {
   try {
     const { data, error } = await supabase
       .from('video_posts')
@@ -219,7 +210,7 @@ export async function getAllPosts(): Promise<VideoPost[]> {
 }
 
 // Get video posts created by user
-export async function getUserPosts(userId: string): Promise<VideoPost[]> {
+export async function getUserPosts(userId: string) {
   try {
     const { data, error } = await supabase
       .from('video_posts')
@@ -236,7 +227,7 @@ export async function getUserPosts(userId: string): Promise<VideoPost[]> {
 }
 
 // Search video posts
-export async function searchPosts(query: string): Promise<VideoPost[]> {
+export async function searchPosts(query: string) {
   try {
     const { data, error } = await supabase
       .from('video_posts')
@@ -253,7 +244,7 @@ export async function searchPosts(query: string): Promise<VideoPost[]> {
 }
 
 // Get latest created video posts
-export async function getLatestPosts(): Promise<VideoPost[]> {
+export async function getLatestPosts() {
   try {
     const { data, error } = await supabase
       .from('video_posts')
@@ -275,14 +266,13 @@ export async function getBookmarkPosts(userId: string): Promise<VideoPost[]> {
   try {
     const { data, error } = await supabase
       .from('user_bookmarks')
-      .select('post(*)')
-      .eq('user', userId)
-      .returns<{ post: VideoPost }[]>();
+      .select('*, video_posts!inner(*, creator(*))')
+      .eq('user_id', userId)
+      .returns<(BookmarkPost & { video_posts: VideoPost })[]>();
 
     if (error) throw error;
 
-    // Extract posts from the returned data
-    return data.map((bookmark) => bookmark.post);
+    return data.map((bookmark) => bookmark.video_posts);
   } catch (error) {
     throw new Error(`[getBookmarkPosts] ${error}`);
   }
@@ -291,9 +281,32 @@ export async function getBookmarkPosts(userId: string): Promise<VideoPost[]> {
 // Bookmark a post
 export async function bookmarkPost(postId: string, userId: string) {
   try {
+    // First check if bookmark exists
+    const { data: existingBookmark, error: fetchError } = await supabase
+      .from('user_bookmarks')
+      .select()
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
+
+    if (existingBookmark) {
+      // If bookmark exists, delete it
+      const { error: deleteError } = await supabase
+        .from('user_bookmarks')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', userId);
+
+      if (deleteError) throw deleteError;
+      return null;
+    }
+
+    // If no bookmark exists, create it
     const { data, error } = await supabase
       .from('user_bookmarks')
-      .insert({ post: postId, user: userId })
+      .insert({ post_id: postId, user_id: userId })
       .select();
 
     if (error) throw error;

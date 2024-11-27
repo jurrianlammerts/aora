@@ -90,6 +90,7 @@ const Trending = ({ posts }: { posts: VideoPost[] }) => {
       onViewableItemsChanged={viewableItemsChanged}
       viewabilityConfig={{ itemVisiblePercentThreshold: 70 }}
       contentOffset={{ x: 170, y: 0 }}
+      showsHorizontalScrollIndicator={false}
     />
   );
 };
