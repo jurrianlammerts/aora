@@ -1,7 +1,4 @@
-import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const SAFE_TABBAR_HEIGHT = 0;
 
 interface PageProps {
   children: React.ReactNode;
@@ -10,11 +7,10 @@ interface PageProps {
 const Page = ({ children }: PageProps) => {
   return (
     <SafeAreaView
-      className="bg-primary h-full"
+      className="bg-primary flex flex-1"
       edges={["right", "left", "top"]}
     >
       {children}
-      <View style={{ height: SAFE_TABBAR_HEIGHT }} />
     </SafeAreaView>
   );
 };

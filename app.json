@@ -26,6 +26,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "newArchEnabled": true,
+    "experiments": {
+      "typedRoutes": true,
+      "tsconfigPaths": true
+    },
     "plugins": [
       "expo-router",
       "expo-font",
